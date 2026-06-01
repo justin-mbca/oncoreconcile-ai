@@ -559,3 +559,142 @@ Official milestones:
 - Jun 7-Jun 27: controlled improvements only if benchmark and demo path remain stable
 - LLM fallback is explicitly deprioritized for Checkpoint 1 and Checkpoint 2; earliest start is **Jun 30, 2026** after core pipeline stability review
 - After Jun 27: feature freeze bias; focus on quality, reliability, and presentation clarity
+
+---
+
+## Prompt Playbook (AI/Vibe Coding)
+
+Use this when asking Copilot/ChatGPT/Claude to generate code. The goal is to keep prompts precise, safe, and reviewable.
+
+### 6-part prompt recipe
+
+1. **Goal:** one sentence describing the feature/fix
+2. **File scope:** exact files allowed to edit
+3. **Constraints:** what must not change
+4. **Acceptance criteria:** observable done conditions
+5. **Output style:** minimal diff, no unrelated refactor
+6. **Validation:** tests/build to run and expected result
+
+### Prompt template
+
+```text
+Act as a senior [backend/frontend] engineer.
+Goal: [one-sentence goal].
+Edit only: [file paths].
+Do not change: [contracts/public schema/other files].
+
+Requirements:
+- [requirement 1]
+- [requirement 2]
+
+Acceptance criteria:
+- [observable behavior 1]
+- [observable behavior 2]
+- [test/build command passes]
+
+Keep changes minimal and backward compatible.
+After coding, list changed files and why.
+```
+
+### Good prompt writing rules
+
+- Always include **exact file paths**
+- Include at least 2 **non-goals** (what not to touch)
+- Define “done” with measurable checks (tests, UI behavior, API fields)
+- Ask for **small PR-sized** output
+- Require validation output (`pytest` / `npm run build`)
+
+### Examples by owner
+
+#### Example 1 — Michael (`backend/app/explain.py`)
+
+```text
+Act as a senior Python backend engineer.
+Goal: create deterministic explainability logic for reconciliation outcomes.
+Edit only: backend/app/explain.py, backend/tests/test_reconcile.py.
+Do not change: backend/app/main.py, contracts/api_contract.md.
+
+Requirements:
+- Implement build_explanation(method, confidence, review_status, evidence).
+- Return concise explanation text for HIGH/AUTO_RECONCILE, MEDIUM/REVIEW_REQUIRED, and LOW/CANNOT_RECONCILE.
+- No external API calls or LLM usage.
+
+Acceptance criteria:
+- Function exists and returns a non-empty string for all 3 states.
+- At least 3 tests added and passing.
+- Existing tests remain green.
+
+Keep changes minimal and backward compatible.
+After coding, list changed files and why.
+```
+
+#### Example 2 — Nikola (`backend/app/reconcile.py` integration)
+
+```text
+Act as a senior Python engineer.
+Goal: integrate explanation generation into reconcile_record without changing normalization behavior.
+Edit only: backend/app/reconcile.py, backend/app/models.py, backend/tests/test_reconcile.py.
+Do not change: data/*.json alias files and endpoint paths.
+
+Requirements:
+- Import and call build_explanation(...) from backend/app/explain.py.
+- Preserve current response fields used by frontend.
+- Keep confidence and review_status logic unchanged.
+
+Acceptance criteria:
+- reconcile_record returns explanation for matched and unmatched cases.
+- Existing and new tests pass with pytest backend/tests/test_reconcile.py.
+
+Keep changes minimal and backward compatible.
+After coding, list changed files and why.
+```
+
+#### Example 3 — Anne (`frontend/src/main.jsx` evidence rendering)
+
+```text
+Act as a senior React engineer.
+Goal: render evidence and explanation clearly in results UI.
+Edit only: frontend/src/main.jsx, frontend/src/style.css.
+Do not change: backend API contract and request payload format.
+
+Requirements:
+- Show explanation text below each result row.
+- Render evidence list with source/type/description when present.
+- Keep existing submit flow unchanged.
+
+Acceptance criteria:
+- UI still submits records successfully.
+- Evidence and explanation are visible for matched records.
+- npm run build passes.
+
+Keep changes minimal and backward compatible.
+After coding, list changed files and why.
+```
+
+#### Example 4 — Eric (`.github/workflows/backend-ci.yml`)
+
+```text
+Act as a DevOps engineer.
+Goal: add backend CI for pull requests.
+Edit only: .github/workflows/backend-ci.yml.
+Do not change: application code in backend/app or frontend/src.
+
+Requirements:
+- Run on push and pull_request.
+- Set up Python, install backend/requirements.txt, run pytest backend/tests/test_reconcile.py.
+
+Acceptance criteria:
+- Workflow YAML is valid.
+- CI runs green on a sample PR.
+
+Keep changes minimal and backward compatible.
+After coding, list changed files and why.
+```
+
+### Team self-check before sending prompt
+
+- Is this one PR-sized task?
+- Are file boundaries explicit?
+- Did I specify at least one non-goal?
+- Is “done” measurable?
+- Did I require validation output?
