@@ -21,27 +21,84 @@ Each person can use AI/vibe coding, but every task must produce a visible delive
 
 ---
 
-## Dependency Blockers (Non-GitHub) + How to Proceed
+## Dependency Blockers — What to Do Now vs. Wait For
 
-Focus only on work-sequencing dependencies and technical handoff blockers.
+Each person has a **do-now track** (unblocked work they can start today) and a **wait-for track** (work that needs something else first).
 
-| Owner | Dependency Blocker | Why it blocks | How to proceed (unblock plan) |
+---
+
+### Nikola
+
+| Blocker | Blocked task | Do now instead | Come back when |
 |---|---|---|---|
-| Anne (Frontend) | Needs stable API response shape (`canonical`, `confidence`, `review_status`, `evidence`, `explanation`) | UI rendering can break if backend fields change | Lock response contract in [contracts/api_contract.md](contracts/api_contract.md); Anne builds UI against fixed fields only |
-| Anne (Frontend) | Needs backend batch endpoint behavior finalized | CSV upload flow depends on `/reconcile/batch` payload/summary shape | Eric + Nikola provide one stable batch sample response; Anne implements table mapping from that sample |
-| Nikola (Backend) | Depends on Rin's new alias data for improved reconciliation coverage | Reconciliation quality plateaus without new aliases/hard cases | Rin ships P0 data first (`E545K` mappings + variant aliases); Nikola merges data-driven improvements before adding ML/embedding |
-| Michael (Backend Explainability) | Shares backend file paths with Nikola (`backend/app/reconcile.py`) | Concurrent edits can cause merge conflicts and logic regressions | Split ownership by function: Nikola owns mapping logic, Michael owns explanation builder/tests; merge in small PRs |
-| Eric (Platform + Full-stack support) | Overloaded across platform + PM + frontend pairing | Context switching delays critical path tasks | Keep execution split: 70% platform guardrails, 20% Anne pairing, 10% backend unblockers |
-| Hao (Deferred LLM fallback) | LLM track is intentionally delayed until deterministic pipeline is stable and travel window ends | Early experimentation can distract from checkpoint-critical work | Earliest LLM kickoff date: **Jun 30, 2026** (post-Checkpoint-2 prep), no dependency for Checkpoint-1/2 MVP |
-| Rin (Data) | Needs canonical naming consistency from backend outputs | Data aliases can drift from backend canonical form | Use canonical strings exactly as backend outputs; validate against benchmark expected columns before PR |
+| Rin's new alias data not merged yet | Improving reconciliation coverage for `E545K`, `METex14`, etc. | Write expanded unit tests for all 20 benchmark cases using **existing** alias data; mark expected-fail cases as `xfail` with a comment | Rin's PR is merged → remove `xfail`, run tests green |
+| Embedding model not installed | P1 embedding similarity work | Write the embedding function **stub** with a clear interface; return `None` until model is loaded | Michael or Nikola installs `sentence-transformers` in `requirements.txt` |
+
+**Do now:** Expand `test_reconcile.py` to 20 cases. Stub embedding layer interface. Both are fully unblocked.
+
+---
+
+### Rin
+
+| Blocker | Blocked task | Do now instead | Come back when |
+|---|---|---|---|
+| Needs to know canonical string format exactly | Adding new aliases without drift | Open [data/nsclc_benchmark.csv](data/nsclc_benchmark.csv) — column `expected_variant` is the exact canonical string to use in every JSON value | — no wait needed; benchmark file is the source of truth |
+| Hard-case file needs design agreement | `nsclc_hard_cases.csv` creation | Start with P0 JSON alias updates only (`E545K`, `METex14`, `ALK rearrangement`) — no design agreement needed for JSON | Hard-case schema is confirmed (columns already defined in this doc) |
+
+**Do now:** P0 JSON alias additions. Fully unblocked.
+
+---
+
+### Michael
+
+| Blocker | Blocked task | Do now instead | Come back when |
+|---|---|---|---|
+| Nikola still editing `reconcile.py` mapping logic | Explanation renderer edits in same file | Build explanation renderer as a **separate function** `build_explanation(evidence, confidence)` in a new file `backend/app/explain.py`; import it from `reconcile.py` later | Nikola's mapping PR is merged → wire `explain.py` into `reconcile_record()` |
+| Need real output samples to build eval CSV | `explainability_eval.csv` population | Run the existing backend locally (`uvicorn app.main:app`) and POST the 20 benchmark cases manually to collect real output samples | — no wait; backend runs today |
+
+**Do now:** Create `backend/app/explain.py` with renderer logic. Run backend locally to generate eval CSV rows. Both fully unblocked.
+
+---
+
+### Anne
+
+| Blocker | Blocked task | Do now instead | Come back when |
+|---|---|---|---|
+| API URL is hardcoded — needs Eric's env config | Full local dev setup | Use hardcoded URL temporarily; add a `TODO` comment at line 19 of `main.jsx` | Eric adds env config → replace with `import.meta.env.VITE_API_BASE_URL` |
+| Batch endpoint behavior needs Nikola/Eric to confirm payload | CSV upload + batch results table | Build the CSV parse and UI table first with **mock data** (`const mockResult = [...]`); swap in real API call once batch is confirmed | Nikola/Eric post a sample batch response in Discord |
+| Backend evidence list content may change | Evidence rendering in UI | Render `result.evidence` as a simple list today — it already works with current backend; just not rendered yet | — no wait needed; evidence is already returned by the API |
+
+**Do now:** Add evidence list rendering (no blocker). Build CSV UI with mock data. Both fully unblocked.
+
+---
+
+### Eric
+
+| Blocker | Blocked task | Do now instead | Come back when |
+|---|---|---|---|
+| Anne is still building CSV UI | Frontend pairing on batch flow | Set up CI workflow file (`.github/workflows/backend-ci.yml`) — fully unblocked | Anne signals she is ready to wire the batch API call |
+| Backend is still evolving | Full env config hardening | Create `frontend/.env.local` and update `main.jsx` line 19 — small change, fully independent | — no wait needed |
+
+**Do now:** Create CI workflow. Add `frontend/.env.local`. Both fully unblocked.
+
+---
+
+### Hao
+
+| Blocker | Blocked task | Do now instead | Come back when |
+|---|---|---|---|
+| Travel + deterministic pipeline not yet stable | LLM fallback implementation | Nothing assigned until Jun 30, 2026 — **no action needed now** | Returns from trip AND Nikola's P0+P1 reconciliation is stable |
+
+---
 
 ### Dependency-first execution order
 
-1. **Rin P0 data update** (variant aliases, especially `E545K` mappings)
-2. **Nikola reconciliation update** using new data
-3. **Michael explainability tests + renderer hardening**
-4. **Anne frontend integration** against stable backend samples
-5. **Eric platform hardening + final unblockers**
+1. **Rin P0 data update** (variant aliases) — unblocked now
+2. **Nikola test expansion + embedding stub** — unblocked now, data improvement follows Rin's PR
+3. **Michael `explain.py` creation + eval CSV** — unblocked now, wiring follows Nikola's PR
+4. **Anne evidence rendering + CSV UI with mock** — unblocked now, batch wiring follows Nikola/Eric confirmation
+5. **Eric CI + env config** — unblocked now, full pairing follows Anne's readiness
+6. **Hao LLM fallback** — deferred to Jun 30, 2026
 
 ---
 
