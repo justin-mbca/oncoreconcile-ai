@@ -1,8 +1,8 @@
 # Team Kickoff Meeting — June 1, 2026
 
-**Duration:** 45 minutes max  
-**Format:** Screen share + live demo — no slides needed  
-**Goal:** Everyone leaves knowing exactly what to build by June 6 (Checkpoint 1)
+**Duration:** 90 minutes  
+**Format:** Screen share + live demo + live vibe coding session — no slides needed  
+**Goal:** Everyone leaves knowing exactly what to build by June 6 (Checkpoint 1) — and has already tried building it
 
 ---
 
@@ -59,7 +59,7 @@ Quick screen share of repo structure:
 
 ---
 
-### 4 — Task Assignments (15 min)
+### 4 — Task Assignments (10 min)
 
 Each person has a dedicated section. Walk through together:
 
@@ -92,7 +92,30 @@ Go around the room — each person says:
 
 ---
 
-### 6 — Communication + Next Steps (5 min)
+### 6 — Vibe Coding Session (45 min)
+
+Everyone picks their task and starts building **live during the meeting** using AI-assisted coding (GitHub Copilot, Cursor, ChatGPT, Claude — whatever they prefer).
+
+**Rules:**
+- Use AI to generate code — that is expected and encouraged
+- Share screen if you want feedback from the group
+- Justin and Eric are available to unblock anyone live
+
+**Suggested tasks to start during this session:**
+
+| Person | Start this now |
+|---|---|
+| Nikola | Open `backend/tests/test_reconcile.py` — add 5 more benchmark test cases using AI |
+| Rin | Open `data/variant_aliases.json` — add `E545K`, `METex14`, `ALK rearrangement` entries |
+| Michael | Create `backend/app/explain.py` — ask AI to scaffold a `build_explanation()` function |
+| Anne | Open `frontend/src/main.jsx` — ask AI to add evidence list rendering below the results table |
+| Eric | Ask AI to generate `.github/workflows/backend-ci.yml` for pytest on pull requests |
+
+**Debrief (last 5 min of this block):** Each person shares what they built or ran into.
+
+---
+
+### 7 — Communication + Next Steps (10 min)
 
 - **Anne** sets up Discord server and shares invite tonight
 - **Eric** confirms branch protections and project board are set up
