@@ -18,6 +18,16 @@ OncoReconcile AI is a human-governed oncology reconciliation workbench that tran
 
 ### Backend (Nikola + Michael)
 
+**Parallel split to avoid conflicts (agreed):**
+
+| Backend slice | Primary owner | File(s) |
+|---|---|---|
+| Deterministic reconciliation logic + benchmark tests | Nikola | `backend/app/reconcile.py`, `backend/tests/test_reconcile.py` |
+| Explanation renderer + explainability QA | Michael | `backend/app/explain.py`, eval CSV |
+| Final integration call (`reconcile_record()` -> `build_explanation(...)`) | Nikola (or Michael in a tiny isolated PR) | `backend/app/reconcile.py` |
+
+**Handoff contract:** `build_explanation(method, confidence, review_status, evidence)` returns deterministic text and must never fail API response generation.
+
 - [ ] **Deterministic reconciliation stable** — all easy/medium benchmark cases passing
   - **Proof:** `backend/tests/test_reconcile.py` with 20+ test cases from NSCLC benchmark
   - **Entry point:** `backend/app/reconcile.py` — `reconcile_record()` function

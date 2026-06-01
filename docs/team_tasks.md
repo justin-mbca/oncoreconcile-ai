@@ -100,6 +100,27 @@ Each person has a **do-now track** (unblocked work they can start today) and a *
 5. **Eric CI + env config** — unblocked now, full pairing follows Anne's readiness
 6. **Hao LLM fallback** — deferred to Jun 30, 2026
 
+### Nikola + Michael split (no-conflict plan)
+
+Use this split so both can work in parallel with minimal merge risk.
+
+| Workstream | Owner | File scope | Must not edit |
+|---|---|---|---|
+| Canonical mapping logic (alias/fuzzy/normalization) | Nikola | `backend/app/reconcile.py`, `backend/tests/test_reconcile.py` | `backend/app/explain.py` internals |
+| Explanation text rules + renderer | Michael | `backend/app/explain.py`, explainability eval CSV | core mapping branches in `reconcile.py` |
+| Integration call site | Nikola (or Michael in a tiny PR) | one call in `reconcile_record()` to `build_explanation(...)` | broader mapping refactor |
+
+Handoff contract (stable by Jun 4):
+
+- `reconcile_record()` provides inputs: `method`, `confidence`, `review_status`, and simple evidence metadata
+- `build_explanation(...)` returns one deterministic sentence (no LLM)
+- If uncertain, explanation should default to a safe fallback string and never break API response generation
+
+Definition of done for this split by Jun 6:
+
+- Nikola: 20-case easy/medium benchmark tests implemented and passing target
+- Michael: `backend/app/explain.py` created, renderer tests added, output present in API responses
+
 ---
 
 ## Nikola: Reconciliation Methods + Real Example Data
