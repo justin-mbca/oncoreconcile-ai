@@ -134,23 +134,28 @@ Example:
 
 ## Confidence Rules for MVP
 
-| Condition | Confidence |
-|---|---|
-| Exact dictionary or alias match | HIGH |
-| Partial/fuzzy match or missing context | MEDIUM |
-| LLM-only suggestion or weak evidence | LOW |
-| No match | LOW |
+| Condition | Method | Confidence |
+|---|---|---|
+| Exact dictionary or alias match (gene, variant, cancer type) | Alias dictionary lookup | HIGH |
+| Fuzzy string match on cancer type free-text only (score ≥ 85) | RapidFuzz — cancer type only | MEDIUM |
+| Semantic similarity match via biomedical embedding model | ML/embedding (e.g. BioBERT, PubMedBERT) | MEDIUM |
+| LLM-inferred suggestion for hard/unmatched cases | LLM fallback (deferred — Hao, Jun 30+) | LOW |
+| No match from any method | — | LOW |
+
+> **Note:** Fuzzy matching is restricted to cancer type free-text only. Gene symbols (e.g. EGFR, KRAS) and variant notation (e.g. p.E746_A750del) must use exact alias dictionary lookup — fuzzy matching on these is unreliable and clinically unsafe.
 
 ---
 
 ## Review Recommendation Rules for MVP
 
-| Confidence | Review Status |
-|---|---|
-| HIGH | AUTO_RECONCILE |
-| MEDIUM | REVIEW_REQUIRED |
-| LOW with candidate | REVIEW_REQUIRED |
-| LOW without candidate | CANNOT_RECONCILE |
+| Confidence | Source method | Review Status |
+|---|---|---|
+| HIGH | Exact alias dictionary match | AUTO_RECONCILE |
+| MEDIUM | Fuzzy cancer type match or ML/embedding similarity | REVIEW_REQUIRED |
+| LOW | LLM suggestion or weak/partial evidence | REVIEW_REQUIRED |
+| LOW | No match from any method | CANNOT_RECONCILE |
+
+> **Human governance rule:** MEDIUM and LOW results are never auto-accepted. A clinician or data analyst must confirm before the canonical output is trusted.
 
 ---
 
