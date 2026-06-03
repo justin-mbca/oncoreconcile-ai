@@ -41,6 +41,39 @@ button {
   cursor: pointer;
 }
 
+.helper-text {
+  color: #555;
+  margin-top: 8px;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 12px 0 18px;
+}
+
+.example-button {
+  margin-top: 0;
+  text-align: left;
+  background: #f0f4ff;
+  border: 1px solid #c7d2fe;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #1f2937;
+}
+
+.example-button:hover {
+  background: #e0e7ff;
+}
+
+.example-button span {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

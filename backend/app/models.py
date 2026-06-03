@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ReconcileRequest(BaseModel):
@@ -13,6 +13,10 @@ class EvidenceItem(BaseModel):
     source: str
     type: str
     description: str
+    evidence_type: Optional[str] = None
+    confidence_weight: Optional[str] = None
+    retrieval_mode: Optional[str] = None
+    url: Optional[str] = None
 
 
 class CanonicalConcept(BaseModel):
@@ -29,7 +33,8 @@ class ReconcileResponse(BaseModel):
     explanation: str
     confidence: str
     review_status: str
-    notes: List[str] = []
+    notes: List[str] = Field(default_factory=list)
+    audit_trail: List[str] = Field(default_factory=list)
 
 
 class BatchRequest(BaseModel):
