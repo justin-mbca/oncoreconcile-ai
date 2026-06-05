@@ -1,0 +1,11 @@
+{
+  "lung cancer": "REVIEW_REQUIRED",
+  "Lung Cancer": "REVIEW_REQUIRED",
+  "Adenocarcinoma": "REVIEW_REQUIRED",
+  "adenocarcinoma": "REVIEW_REQUIRED",
+  "Squamous": "REVIEW_REQUIRED",
+  "squamous": "REVIEW_REQUIRED",
+  "Small Cell": "REVIEW_REQUIRED",
+  "small cell": "REVIEW_REQUIRED",
+  "BRCA": "REVIEW_REQUIRED"
+}

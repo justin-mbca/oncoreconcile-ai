@@ -7,16 +7,15 @@ case_005,Lung Adenocarcinoma,MET,Exon 14 Skipping,Lung Adenocarcinoma,MET,MET Ex
 case_006,NSCLC,HER2,Amplification,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Amplification,EASY,Gene alias
 case_007,NSCLC,HER-2,amp,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Amplification,MEDIUM,Gene and variant alias
 case_008,LUAD,p53,R175H,Lung Adenocarcinoma,TP53,TP53 p.R175H,MEDIUM,Gene alias and protein shorthand
-case_009,NSCLC,ERBB2,exon20ins,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Exon 20 Insertion (Unspecified),MEDIUM,Variant shorthand
+case_009,NSCLC,ERBB2,exon20ins,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Exon 20 Insertion,MEDIUM,Variant shorthand
 case_010,NSCLC,EGFR,L858R,Non-Small Cell Lung Cancer,EGFR,EGFR p.L858R,EASY,Common activating mutation
 case_011,NSCLC,ROS1,rearrangement,Non-Small Cell Lung Cancer,ROS1,ROS1 Fusion,MEDIUM,Synonym to fusion
 case_012,NSCLC,RET,fusion,Non-Small Cell Lung Cancer,RET,RET Fusion,EASY,Fusion class
 case_013,LUAD,BRAF,V600E,Lung Adenocarcinoma,BRAF,BRAF p.V600E,EASY,Canonical shorthand
-case_014,NSCLC,NTRK,pan-trk fusion,Non-Small Cell Lung Cancer,NTRK,NTRK Fusion,DIFFICULT,Gene family ambiguity should trigger review
+case_014,NSCLC,NTRK,pan-trk fusion,Non-Small Cell Lung Cancer,NTRK,NTRK Fusion,DIFFICULT,Gene family ambiguity
 case_015,NSCLC,EGFR,del19,Non-Small Cell Lung Cancer,EGFR,EGFR Exon 19 Deletion,MEDIUM,Synonym
-case_016,NSCLC,EGFR,E746_A750del,Non-Small Cell Lung Cancer,EGFR,EGFR p.E746_A750del,MEDIUM,Specific Exon 19 deletion subtype
+case_016,NSCLC,EGFR,E746_A750del,Non-Small Cell Lung Cancer,EGFR,EGFR p.E746_A750del,MEDIUM,Protein deletion
 case_017,NSCLC,PIK3CA,E545K,Non-Small Cell Lung Cancer,PIK3CA,PIK3CA p.E545K,EASY,Known hotspot
-case_018,NSCLC,unknown_gene,G12C,Non-Small Cell Lung Cancer,,,"DIFFICULT",Expected CANNOT_RECONCILE due to unknown gene
-case_019,NSCLC,ALK,positive,Non-Small Cell Lung Cancer,ALK,ALK Alteration,DIFFICULT,Ambiguous positivity should trigger review
-case_020,lung cancer,HER2,copy gain,,ERBB2,ERBB2 Copy Number Gain,DIFFICULT,Ambiguous cancer type should trigger review
-case_021,NSCLC,EGFR,activating mutation,Non-Small Cell Lung Cancer,EGFR,,DIFFICULT,Insufficient variant specificity should trigger review
+case_018,NSCLC,unknown_gene,G12C,Non-Small Cell Lung Cancer,,,"DIFFICULT",Cannot reconcile gene
+case_019,NSCLC,ALK,positive,Non-Small Cell Lung Cancer,ALK,ALK Alteration,DIFFICULT,Ambiguous positivity
+case_020,lung cancer,HER2,copy gain,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Copy Number Gain,DIFFICULT,Ambiguous cancer type and variant

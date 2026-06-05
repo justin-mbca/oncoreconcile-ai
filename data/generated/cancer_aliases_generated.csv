@@ -1,0 +1,5 @@
+cancer_alias,canonical_cancer_type,source,curation_note
+NSCLC,Non-Small Cell Lung Cancer,Manual disease seed,Seed disease alias for controlled benchmark generation.
+Non-Small Cell Lung Cancer,Non-Small Cell Lung Cancer,Manual disease seed,Seed disease alias for controlled benchmark generation.
+LUAD,Lung Adenocarcinoma,Manual disease seed,Seed disease alias for controlled benchmark generation.
+Lung Adenocarcinoma,Lung Adenocarcinoma,Manual disease seed,Seed disease alias for controlled benchmark generation.

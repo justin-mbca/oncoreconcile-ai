@@ -1,0 +1,9 @@
+{
+  "TRK": {
+    "reason": "Could represent NTRK1, NTRK2, NTRK3, or pan-TRK IHC result"
+  },
+
+  "trk": {
+    "reason": "Could represent NTRK1, NTRK2, NTRK3, or pan-TRK IHC result"
+  }
+}

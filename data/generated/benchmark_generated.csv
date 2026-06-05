@@ -1,0 +1,33 @@
+case_id,cancer_type,gene,variant,expected_cancer_type,expected_gene,expected_variant,difficulty,source,curation_note
+case_001,NSCLC,ALK,ALK Fusion,Non-Small Cell Lung Cancer,ALK,ALK Fusion,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_002,LUAD,BRAF,BRAF p.V600E,Lung Adenocarcinoma,BRAF,BRAF p.V600E,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_003,LUAD,EGFR,EGFR Exon 19 Deletion,Lung Adenocarcinoma,EGFR,EGFR Exon 19 Deletion,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_004,LUAD,EGFR,EGFR p.L858R,Lung Adenocarcinoma,EGFR,EGFR p.L858R,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_005,LUAD,EGFR,EGFR p.T790M,Lung Adenocarcinoma,EGFR,EGFR p.T790M,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_006,NSCLC,ERBB2,ERBB2 Amplification,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Amplification,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_007,NSCLC,KRAS,KRAS p.G12C,Non-Small Cell Lung Cancer,KRAS,KRAS p.G12C,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_008,LUAD,MET,MET Exon 14 Skipping,Lung Adenocarcinoma,MET,MET Exon 14 Skipping,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_009,NSCLC,PIK3CA,PIK3CA p.E545K,Non-Small Cell Lung Cancer,PIK3CA,PIK3CA p.E545K,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_010,NSCLC,RET,RET Fusion,Non-Small Cell Lung Cancer,RET,RET Fusion,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_011,NSCLC,ROS1,ROS1 Fusion,Non-Small Cell Lung Cancer,ROS1,ROS1 Fusion,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_012,LUAD,TP53,TP53 p.R175H,Lung Adenocarcinoma,TP53,TP53 p.R175H,EASY,Manual disease seed;Manual variant seed,Exact symbol + exact canonical variant.
+case_013,Non-Small Cell Lung Cancer,ALK1,fusion,Non-Small Cell Lung Cancer,ALK,ALK Fusion,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_014,Lung Adenocarcinoma,BRAF-1,V600E,Lung Adenocarcinoma,BRAF,BRAF p.V600E,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_015,Non-Small Cell Lung Cancer,ERBB,Ex19del,Non-Small Cell Lung Cancer,EGFR,EGFR Exon 19 Deletion,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_016,Non-Small Cell Lung Cancer,ERBB,L858R,Non-Small Cell Lung Cancer,EGFR,EGFR p.L858R,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_017,Non-Small Cell Lung Cancer,ERBB,T790M,Non-Small Cell Lung Cancer,EGFR,EGFR p.T790M,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_018,Non-Small Cell Lung Cancer,CD340,amp,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Amplification,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_019,Non-Small Cell Lung Cancer,K-Ras4B,G12C,Non-Small Cell Lung Cancer,KRAS,KRAS p.G12C,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_020,Non-Small Cell Lung Cancer,DFNB97,Exon 14 Skipping,Non-Small Cell Lung Cancer,MET,MET Exon 14 Skipping,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_021,Non-Small Cell Lung Cancer,PI3K,E545K,Non-Small Cell Lung Cancer,PIK3CA,PIK3CA p.E545K,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_022,Non-Small Cell Lung Cancer,CDHF12,fusion,Non-Small Cell Lung Cancer,RET,RET Fusion,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_023,Non-Small Cell Lung Cancer,MCF3,fusion,Non-Small Cell Lung Cancer,ROS1,ROS1 Fusion,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_024,Non-Small Cell Lung Cancer,LFS1,R175H,Non-Small Cell Lung Cancer,TP53,TP53 p.R175H,MEDIUM,HGNC-derived;Manual disease seed;Manual variant seed,Gene alias + variant shorthand/synonym.
+case_025,lung cancer,CD340,copy gain,Non-Small Cell Lung Cancer,ERBB2,ERBB2 Amplification,DIFFICULT,HGNC-derived;Synthetic ambiguity test,Ambiguous disease and copy-number phrasing.
+case_026,thoracic malignancy,ALK,positive,,ALK,ALK Fusion,DIFFICULT,Synthetic ambiguity test,Ambiguous disease + non-specific variant wording.
+case_027,NSCLC,UNKNOWN_GENE,G12C,Non-Small Cell Lung Cancer,,,DIFFICULT,Synthetic ambiguity test,Unknown gene negative control.
+case_028,LUAD,EGFR,uncommon activating change,Lung Adenocarcinoma,EGFR,,DIFFICULT,Manual disease seed;Synthetic ambiguity test,"Known gene, unresolved variant wording."
+case_029,NSCLC NOS,ERBB,exon 19-like deletion,,EGFR,EGFR Exon 19 Deletion,DIFFICULT,HGNC-derived;Synthetic ambiguity test,Non-seed disease alias and fuzzy variant phrase.
+case_030,Lung Adeno Ca,MET,ex14 skip,,MET,MET Exon 14 Skipping,DIFFICULT,Synthetic ambiguity test,Abbreviated disease + shorthand variant phrase.
+case_031,NSCLC,BRAF,V600-like,Non-Small Cell Lung Cancer,BRAF,,DIFFICULT,Manual disease seed;Synthetic ambiguity test,Ambiguous hotspot class without exact substitution.
+case_032,Non-Small Cell Lung Cancer,KRAS,UNKNOWN_VARIANT,Non-Small Cell Lung Cancer,KRAS,,DIFFICULT,Manual disease seed;Synthetic ambiguity test,Unknown variant negative control.

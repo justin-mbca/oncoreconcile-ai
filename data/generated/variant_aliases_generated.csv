@@ -1,0 +1,27 @@
+variant_alias,canonical_variant,source,curation_note
+EGFR Exon 19 Deletion,EGFR Exon 19 Deletion,Manual variant seed,Canonical seed for EGFR.
+EGFR p.L858R,EGFR p.L858R,Manual variant seed,Canonical seed for EGFR.
+EGFR p.T790M,EGFR p.T790M,Manual variant seed,Canonical seed for EGFR.
+KRAS p.G12C,KRAS p.G12C,Manual variant seed,Canonical seed for KRAS.
+BRAF p.V600E,BRAF p.V600E,Manual variant seed,Canonical seed for BRAF.
+MET Exon 14 Skipping,MET Exon 14 Skipping,Manual variant seed,Canonical seed for MET.
+ALK Fusion,ALK Fusion,Manual variant seed,Canonical seed for ALK.
+ROS1 Fusion,ROS1 Fusion,Manual variant seed,Canonical seed for ROS1.
+RET Fusion,RET Fusion,Manual variant seed,Canonical seed for RET.
+ERBB2 Amplification,ERBB2 Amplification,Manual variant seed,Canonical seed for ERBB2.
+TP53 p.R175H,TP53 p.R175H,Manual variant seed,Canonical seed for TP53.
+PIK3CA p.E545K,PIK3CA p.E545K,Manual variant seed,Canonical seed for PIK3CA.
+Ex19del,EGFR Exon 19 Deletion,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+del19,EGFR Exon 19 Deletion,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+L858R,EGFR p.L858R,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+T790M,EGFR p.T790M,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+G12C,KRAS p.G12C,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+V600E,BRAF p.V600E,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+Exon 14 Skipping,MET Exon 14 Skipping,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+METex14,MET Exon 14 Skipping,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+fusion,ALK Fusion,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+rearrangement,ALK Fusion,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+amp,ERBB2 Amplification,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+Amplification,ERBB2 Amplification,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+R175H,TP53 p.R175H,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
+E545K,PIK3CA p.E545K,Manual variant seed,Shorthand/synonym included for MEDIUM case generation.
