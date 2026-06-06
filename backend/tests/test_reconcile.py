@@ -159,12 +159,26 @@ def test_case014_ntrk_pan_trk_fusion():
     assert r.canonical.variant == "NTRK Fusion"
 
 
-@pytest.mark.xfail(reason="unknown_gene not in alias dict; expected CANNOT_RECONCILE")
+def test_trk_fusion_requires_review():
+    req = ReconcileRequest(cancer_type="NSCLC", gene="TRK", variant="fusion")
+    r = reconcile_record(req)
+    assert r.review_status == "REVIEW_REQUIRED"
+    assert r.confidence == "MEDIUM"
+    assert r.canonical.cancer_type == "Non-Small Cell Lung Cancer"
+    assert r.canonical.gene is None
+    assert r.canonical.variant is None
+    assert "TRK may refer to NTRK1, NTRK2, or NTRK3" in r.explanation
+    assert "Rather than guessing" in r.explanation
+
+
 def test_case018_unknown_gene():
     req = ReconcileRequest(case_id="case_018", cancer_type="NSCLC", gene="unknown_gene", variant="G12C")
     r = reconcile_record(req)
     assert r.review_status == "CANNOT_RECONCILE"
     assert r.canonical.gene is None
+    assert r.canonical.variant is None
+    assert "current knowledge base" in r.explanation
+    assert "CANNOT_RECONCILE" in r.explanation
 
 
 def test_case019_alk_positive():

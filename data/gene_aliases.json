@@ -10,6 +10,7 @@
   "MET": "MET",
   "ROS1": "ROS1",
   "RET": "RET",
+  "NTRK": "NTRK",
   "BRAF": "BRAF",
   "PIK3CA": "PIK3CA"
 }

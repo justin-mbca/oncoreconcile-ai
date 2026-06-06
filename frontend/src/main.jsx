@@ -31,7 +31,8 @@ const STATUS_COLORS = {
 
 const EXAMPLE_INPUTS = [
   { label: "EGFR Exon 19 Deletion", cancer_type: "NSCLC", gene: "EGFR", variant: "Exon 19 Deletion" },
-  { label: "HER2 Amplification", cancer_type: "NSCLC", gene: "HER2", variant: "Amplification" },
+  { label: "HER2 Amplification", cancer_type: "NSCLC", gene: "HER2", variant: "amp" },
+  { label: "TRK Fusion Review", cancer_type: "NSCLC", gene: "TRK", variant: "fusion" },
   { label: "Cannot Reconcile", cancer_type: "NSCLC", gene: "unknown_gene", variant: "G12C" },
   { label: "ALK Rearrangement", cancer_type: "Lung Cancer", gene: "ALK", variant: "Rearrangement" },
   { label: "PIK3CA E545K", cancer_type: "Breast Cancer", gene: "PIK3CA", variant: "E545K" },

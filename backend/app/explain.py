@@ -54,8 +54,23 @@ def build_explanation(
             f"{source_note}. No human review is required."
         )
 
+    # --- CANNOT_RECONCILE ---
+    if review_status == "CANNOT_RECONCILE":
+        return (
+            "The gene cannot be identified using the current knowledge base, "
+            "so the system safely returns CANNOT_RECONCILE."
+        )
+
     # --- MEDIUM / REVIEW_REQUIRED ---
     if confidence == "MEDIUM" or review_status == "REVIEW_REQUIRED":
+        review_required = [
+            e.get("description", "")
+            for e in evidence
+            if e and e.get("evidence_type") == "requires_human_review" and e.get("description")
+        ]
+        if review_required:
+            return " ".join(review_required)
+
         matched = [e.get("description", "") for e in evidence if e]
         match_note = f" Partial matches found: {'; '.join(matched)}." if matched else ""
         return (
@@ -63,8 +78,8 @@ def build_explanation(
             f"{match_note} Human review is recommended before use."
         )
 
-    # --- LOW / CANNOT_RECONCILE ---
-    if confidence == "LOW" or review_status == "CANNOT_RECONCILE":
+    # --- LOW fallback ---
+    if confidence == "LOW":
         return (
             "No reliable canonical match was found for one or more entities. "
             "This record has been flagged for manual review. "

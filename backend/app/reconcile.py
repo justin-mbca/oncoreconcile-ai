@@ -14,6 +14,7 @@ def load_json(name: str) -> dict:
 
 CANCER_ALIASES = load_json("cancer_aliases.json")
 GENE_ALIASES = load_json("gene_aliases.json")
+GENE_REVIEW_REQUIRED = load_json("gene_review_required.json")
 VARIANT_ALIASES = load_json("variant_aliases.json")
 
 
@@ -29,6 +30,11 @@ def normalize_gene(value: str):
     return canonical, "Gene alias match" if canonical else None
 
 
+def get_gene_review_required(value: str):
+    raw = value.strip()
+    return GENE_REVIEW_REQUIRED.get(value) or GENE_REVIEW_REQUIRED.get(raw)
+
+
 def normalize_variant(value: str, canonical_gene: str | None):
     raw = value.strip()
     mapped = VARIANT_ALIASES.get(raw)
@@ -39,6 +45,11 @@ def normalize_variant(value: str, canonical_gene: str | None):
         if canonical_gene:
             mapped = mapped.replace("{gene}", canonical_gene)
         else:
+            return None, None
+
+    if " " in mapped:
+        mapped_gene = mapped.split(" ", 1)[0]
+        if mapped_gene.isupper() and canonical_gene != mapped_gene:
             return None, None
 
     return mapped, "Variant synonym match"
@@ -67,6 +78,8 @@ def reconcile_record(req: ReconcileRequest) -> ReconcileResponse:
     canonical_cancer, cancer_reason = normalize_cancer_type(req.cancer_type)
     audit_trail.append("Gene alias lookup attempted")
     canonical_gene, gene_reason = normalize_gene(req.gene)
+    audit_trail.append("Gene review-required lookup attempted")
+    gene_review_required = get_gene_review_required(req.gene)
     audit_trail.append("Variant synonym lookup attempted")
     canonical_variant, variant_reason = normalize_variant(req.variant, canonical_gene)
 
@@ -91,6 +104,19 @@ def reconcile_record(req: ReconcileRequest) -> ReconcileResponse:
             confidence_weight="HIGH",
             retrieval_mode="local_seed_alias"
         ))
+    if gene_review_required:
+        audit_trail.append("Gene ambiguity requiring review found")
+        evidence.append(EvidenceItem(
+            source="Seed Knowledge Base / HGNC-inspired",
+            type="gene_review_required",
+            description=(
+                f"{req.gene} may refer to NTRK1, NTRK2, or NTRK3. "
+                "Rather than guessing, the system recommends human review."
+            ),
+            evidence_type="requires_human_review",
+            confidence_weight="MEDIUM",
+            retrieval_mode="local_review_required"
+        ))
     if variant_reason:
         audit_trail.append("Variant synonym match found")
         evidence.append(EvidenceItem(
@@ -106,6 +132,9 @@ def reconcile_record(req: ReconcileRequest) -> ReconcileResponse:
 
     confidence = get_confidence(bool(canonical_cancer), bool(canonical_gene), bool(canonical_variant))
     review_status = get_review_status(confidence, canonical_gene, canonical_variant)
+    if gene_review_required:
+        confidence = "MEDIUM"
+        review_status = "REVIEW_REQUIRED"
     audit_trail.append(f"Confidence computed: {confidence}")
     audit_trail.append(f"Review status decided: {review_status}")
 
@@ -114,6 +143,9 @@ def reconcile_record(req: ReconcileRequest) -> ReconcileResponse:
     audit_trail.append("Explanation generated")
 
     notes = []
+    if gene_review_required:
+        notes.append(gene_review_required.get("reason", "Gene requires human review."))
+        audit_trail.append("Gene marked for human review")
     if not canonical_gene:
         notes.append("Gene could not be reconciled.")
         audit_trail.append("Gene unresolved")
