@@ -262,14 +262,17 @@ The MVP uses two evidence layers.
 
 Current implementation:
 
-* MyVariant.info
+* Live MyVariant.info evidence lookup
+* Best-effort live CIViC variant candidate lookup
+* Live MyGene.info gene candidate lookup
+* Local CIViC candidate dataset
+* Local ClinVar, CIViC, and OncoKB reference mappings
 
 Future roadmap:
 
-* CIViC API
-* ClinVar API
+* Hardened CIViC connector with stronger response validation and monitoring
+* Direct ClinVar API integration
 * ClinGen Allele Registry
-* NCBI Gene
 
 ### Governance Rules
 
@@ -371,8 +374,10 @@ The platform prioritizes transparency over automation.
 * HL7 FHIR Genomics interoperability
 * mCODE interoperability
 * OMOP Oncology interoperability
-* CIViC live API integration
+* Production-grade CIViC integration
 * ClinGen Allele Registry integration
+* Direct ClinVar integration
+* Production-grade reviewer-assistance models
 
 > Important: The MVP is inspired by these standards and concepts but does not claim official compliance or certification.
 
@@ -434,7 +439,7 @@ oncoreconcile-ai/
 ├── backend/                # FastAPI backend
 ├── frontend/               # React frontend
 ├── docs/                   # MVP, architecture, weekly plan, decisions
-├── demo/                   # Demo script and screenshots
+├── demo/                   # Demo script and future presentation assets
 └── .github/                # Issue templates, PR template, CI
 ```
 
@@ -579,19 +584,8 @@ Before coding, read:
 
 ## Current Project Status
 
-Estimated completion:
-
-```text
-~95%
-```
-
-Remaining work:
-
-* Demo polish
-* Additional benchmark coverage
-* Presentation materials
-* Final competition video
-* Documentation refinement
+The engineering MVP is implemented and verified. Remaining work is primarily
+competition presentation, visual QA, and delivery packaging.
 
 ---
 
@@ -599,24 +593,26 @@ Remaining work:
 
 ### Before Final Submission
 
-* Polish demo workflow
-* Add final screenshots
-* Expand benchmark examples
-* Improve evidence display
+* Complete final browser-based visual QA across the main demo workflow
+* Polish and rehearse the 5–7 minute demo workflow
+* Capture final screenshots
 * Finalize presentation deck
 * Record demo video
+* Perform final documentation and submission consistency review
 
 ### Future
 
-* CIViC live API integration
-* ClinVar API integration
+* Harden the existing best-effort CIViC live candidate lookup into a production connector
+* Add direct ClinVar API integration
 * ClinGen Allele Registry integration
 * GA4GH VRS objects
 * Cat-VRS serialization
 * VA-Spec-compatible export
 * HL7 FHIR Genomics interoperability
 * OMOP Oncology integration
-* LLM-assisted reviewer support
+* Production-grade LLM-assisted reviewer support; the MVP currently has an optional review-only hook
+* Database-backed review storage, authentication, and role-based access
+* Explicit curator-controlled promotion from approved reviews into versioned catalogs
 
 ---
 
