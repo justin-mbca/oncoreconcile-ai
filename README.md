@@ -1,16 +1,19 @@
+You’re right — I stopped too early. Here is a **complete README.md** you can copy/paste into VS Code.
+
+````markdown
 # OncoReconcile AI
 
-## Human-Governed Oncology Reconciliation Workbench
+## Human-Governed Oncology Entity Reconciliation Platform
 
-OncoReconcile AI transforms messy oncology entities into canonical oncology candidates with evidence, explainability, confidence scoring, and human-governed review.
+OncoReconcile AI is a human-governed oncology entity reconciliation platform that transforms heterogeneous cancer types, genes, and variants into trusted canonical oncology concepts through explainable reconciliation, evidence discovery, adaptive external knowledge retrieval, confidence scoring, provenance tracking, and expert review workflows.
 
-This project is being developed for the DFWIT AI & Startup Competition by Team Variant Vanguard.
+This project is being developed for the **DFWIT AI & Startup Competition 2026** by **Team Variant Vanguard**.
 
 ---
 
 ## One-Sentence MVP
 
-OncoReconcile AI is a human-governed oncology reconciliation workbench that transforms messy cancer types, genes, and variants into trusted canonical oncology concepts with evidence, explainability, confidence scoring, and review recommendations.
+OncoReconcile AI transforms messy oncology entities into trusted canonical oncology concepts using deterministic reconciliation, evidence discovery, adaptive external evidence retrieval, confidence scoring, explainability, provenance tracking, and human-governed review.
 
 ---
 
@@ -18,13 +21,14 @@ OncoReconcile AI is a human-governed oncology reconciliation workbench that tran
 
 Real-world oncology data often uses inconsistent names for the same concept.
 
-Examples:
+### Examples
 
 | Messy Input | Canonical Concept |
 |---|---|
-| NSCLC | Non-Small Cell Lung Cancer |
+| NSCLC | Lung Non-Small Cell Carcinoma |
 | LUAD | Lung Adenocarcinoma |
 | HER2 / HER-2 | ERBB2 |
+| HER1 | EGFR |
 | p53 | TP53 |
 | EGFR Ex19del | EGFR Exon 19 Deletion |
 | HER2 Amplification | ERBB2 Amplification |
@@ -36,7 +40,27 @@ These inconsistencies make it difficult to support:
 - Evidence aggregation
 - Multi-vendor data integration
 - Population analytics
+- Precision oncology workflows
 - AI-ready oncology datasets
+
+---
+
+## Solution
+
+OncoReconcile AI provides a trusted oncology reconciliation layer that:
+
+- Normalizes disease names
+- Normalizes gene names
+- Normalizes variant names
+- Preserves ambiguity when uncertainty exists
+- Discovers supporting evidence
+- Retrieves external evidence when needed
+- Generates explainable reconciliation decisions
+- Maintains provenance and audit trails
+- Supports human review and governance
+- Enables benchmark-driven validation
+
+Rather than forcing uncertain mappings, the platform routes ambiguous cases to expert review.
 
 ---
 
@@ -44,19 +68,49 @@ These inconsistencies make it difficult to support:
 
 ### In Scope
 
-- CSV upload
-- Manual JSON/API input
+#### Reconciliation
+
 - Cancer type reconciliation
 - Gene reconciliation
 - Variant reconciliation
-- Local and live external evidence context
-- Deterministic explanation with an optional review-only LLM suggestion
+- Exact matching
+- Alias matching
+- Fuzzy matching
+
+#### Explainability
+
+- Deterministic explanations
 - Confidence scoring
+- Confidence breakdown
+- Alternatives considered
+
+#### Evidence
+
+- Local evidence retrieval
+- Candidate evidence discovery
+- Disease-gene context validation
+- Curated variant catalog validation
+- Adaptive MyVariant.info evidence retrieval
+
+#### Governance
+
 - Persistent human review queue
-- Curator approve, reject, edit, note, and reopen actions
-- Benchmark validation dashboard
-- Result table
-- CSV/JSON output
+- Approve workflow
+- Reject workflow
+- Edit workflow
+- Reviewer notes
+- Reopen workflow
+- Duplicate review prevention
+
+#### Validation
+
+- Benchmark validation framework
+- Benchmark dashboard
+- CSV upload
+- Manual JSON/API input
+- CSV and JSON output
+
+---
 
 ### Out of Scope for MVP
 
@@ -69,6 +123,7 @@ These inconsistencies make it difficult to support:
 - Trial matching
 - GraphRAG
 - Production-grade knowledge graph
+- Autonomous clinical decision-making
 
 ---
 
@@ -77,71 +132,178 @@ These inconsistencies make it difficult to support:
 ```text
 Input
 ↓
+Text Normalization
+↓
 Cancer Type Reconciliation
 ↓
 Gene Reconciliation
 ↓
 Variant Reconciliation
 ↓
-Canonical Oncology Concept
+Cat-VRS-Inspired Ambiguity Detection
 ↓
-Local Evidence Retrieval
+Local Knowledge Validation
 ↓
-Adaptive MyVariant.info Evidence Retrieval (when needed)
+Candidate Evidence Discovery
 ↓
-Deterministic Explanation
+Confidence Scoring
 ↓
-Confidence Recommendation
+Adaptive External Evidence Retrieval (MyVariant)
+↓
+Evidence Aggregation
 ↓
 Review Recommendation
 ↓
 Human Review Queue
 ↓
+Audit Trail
+↓
+Benchmark Validation
+↓
 Output
-```
+````
+
+---
+
+## Current MVP Capabilities
+
+Implemented and verified:
+
+### Reconciliation
+
+* Disease reconciliation
+* Gene reconciliation
+* Variant reconciliation
+* Exact matching
+* Alias matching
+* Fuzzy matching
+
+### Explainability
+
+* Deterministic explanations
+* Confidence scoring
+* Confidence breakdown
+* Alternatives considered
+
+### Evidence
+
+* Local evidence retrieval
+* Candidate evidence discovery
+* Disease-gene context validation
+* Curated variant catalog validation
+* Adaptive MyVariant.info evidence retrieval
+
+### Governance
+
+* Persistent human review queue
+* Approve workflow
+* Reject workflow
+* Edit workflow
+* Reviewer notes
+* Reopen workflow
+* Duplicate review prevention
+
+### Validation
+
+* Benchmark validation framework
+* Benchmark dashboard
+* CSV upload
+* Manual API input
+* CSV and JSON output
 
 ---
 
 ## Output Status Categories
 
-Every input record should end in one of three states:
+Every input record ends in one of three states.
 
-| Status | Meaning |
-|---|---|
-| AUTO_RECONCILE | High-confidence match |
-| REVIEW_REQUIRED | Ambiguous or medium-confidence match |
-| CANNOT_RECONCILE | No reliable match found |
+| Status           | Meaning                                        |
+| ---------------- | ---------------------------------------------- |
+| AUTO_RECONCILE   | High-confidence reconciliation                 |
+| REVIEW_REQUIRED  | Ambiguous or evidence-supported reconciliation |
+| CANNOT_RECONCILE | No reliable reconciliation found               |
+
+### AUTO_RECONCILE Example
+
+```text
+NSCLC + HER2 + Amplification
+↓
+ERBB2 Amplification
+```
+
+### REVIEW_REQUIRED Examples
+
+```text
+NSCLC + TRK + fusion
+```
+
+```text
+NSCLC + EGFR + C797S
+```
+
+### CANNOT_RECONCILE Example
+
+```text
+UnknownCancer + RandomGeneXYZ + RandomVariant
+```
 
 ---
 
-## Evidence And Governance
+## Evidence and Governance
 
-The MVP uses two evidence layers:
+The MVP uses two evidence layers.
 
-- **Local evidence:** alias dictionaries, disease-gene context, curated variant catalog, local CIViC candidate rows, and curated external-reference mappings.
-- **Live external evidence:** advisory MyVariant.info lookup for unresolved or review-required gene/variant inputs.
+### Local Evidence
 
-Live external evidence:
+* Alias dictionaries
+* Disease-gene context catalog
+* Curated variant catalog
+* Local CIViC candidate rows
+* Curated external-reference mappings
 
-- supports human review only
-- never directly produces `AUTO_RECONCILE`
-- includes source, retrieval mode, timestamp, external ID, and source URL when available
-- fails gracefully with an error evidence record when the API is unavailable
+### External Evidence
 
-Review-required responses are persisted in:
+Current implementation:
+
+* MyVariant.info
+
+Future roadmap:
+
+* CIViC API
+* ClinVar API
+* ClinGen Allele Registry
+* NCBI Gene
+
+### Governance Rules
+
+External evidence:
+
+* Supports human review only
+* Never directly produces `AUTO_RECONCILE`
+* Includes source metadata
+* Includes retrieval mode
+* Includes timestamp
+* Includes external identifiers
+* Includes source URLs when available
+* Fails gracefully when APIs are unavailable
+
+Review-required cases are persisted in:
 
 ```text
 data/review_queue.json
 ```
 
-The same input uses a stable review key when no `case_id` is supplied, preventing duplicate queue records. Approve, reject, edit, reviewer notes, and reopen decisions are also persisted.
+Review decisions include:
 
-Approved reviews do not automatically modify `data/gene_variant_catalog.csv`. A disabled `promote_candidate_to_catalog()` roadmap stub makes catalog promotion an explicit future governance action.
+* Approve
+* Reject
+* Edit
+* Reviewer notes
+* Reopen
 
-Standards language:
+Approved reviews do not automatically modify curated catalogs.
 
-- The evidence and audit model is **VA-Spec-inspired**, not VA-Spec compliant.
-- The ambiguity-preservation layer is **Cat-VRS-inspired**, not an official Cat-VRS implementation.
+Future catalog promotion remains an explicit governance action.
 
 ---
 
@@ -153,19 +315,116 @@ curl -X POST http://127.0.0.1:8000/reconcile \
   -d '{"cancer_type":"NSCLC","gene":"EGFR","variant":"C797S"}'
 ```
 
-Expected status: `REVIEW_REQUIRED`.
+Expected status:
 
-If MyVariant.info is available, the response includes evidence with:
+```text
+REVIEW_REQUIRED
+```
+
+If MyVariant.info is available, the response may include:
 
 ```text
 retrieval_mode: live_myvariant_api
 ```
 
-If it is unavailable, reconciliation still succeeds and records:
+If MyVariant.info is unavailable, reconciliation still succeeds and records:
 
 ```text
 retrieval_mode: live_myvariant_api_error
 ```
+
+The case remains routed to human review.
+
+---
+
+## Explainability
+
+Each reconciliation returns:
+
+* Canonical concepts
+* Explanation
+* Confidence score
+* Confidence breakdown
+* Evidence sources
+* Alternatives considered
+* Review recommendation
+* Audit history
+
+The platform prioritizes transparency over automation.
+
+---
+
+## Standards Alignment
+
+### Implemented / Inspired
+
+* HGNC-inspired gene normalization
+* HGVS-inspired variant normalization
+* ClinVar-inspired evidence references
+* ClinGen-inspired curation concepts
+* Cat-VRS-inspired ambiguity preservation
+* VA-Spec-inspired provenance model
+* Adaptive external evidence retrieval
+
+### Future Roadmap
+
+* GA4GH VRS integration
+* GA4GH Cat-VRS serialization
+* GA4GH VA-Spec-compatible export
+* HL7 FHIR Genomics interoperability
+* mCODE interoperability
+* OMOP Oncology interoperability
+* CIViC live API integration
+* ClinGen Allele Registry integration
+
+> Important: The MVP is inspired by these standards and concepts but does not claim official compliance or certification.
+
+---
+
+## Verification Status
+
+Current automated verification results:
+
+```text
+26 tests passed
+161 benchmark cases
+Frontend production build successful
+Backend API verified
+Review workflow verified
+External evidence retrieval verified
+```
+
+Test coverage includes:
+
+* `AUTO_RECONCILE` guardrails
+* `REVIEW_REQUIRED` workflows
+* Candidate evidence routing
+* MyVariant success and failure handling
+* Review queue persistence
+* Duplicate prevention
+* Approve workflows
+* Edit workflows
+* Reopen workflows
+
+---
+
+## What Makes OncoReconcile AI Different
+
+Most normalization systems stop after terminology mapping.
+
+OncoReconcile AI extends reconciliation with:
+
+* Human-in-the-loop governance
+* Ambiguity preservation
+* Candidate evidence discovery
+* Adaptive external evidence retrieval
+* Provenance tracking
+* Auditability
+* Catalog expansion workflows
+* Benchmark-driven validation
+* Standards-aligned architecture
+
+The platform is designed as a trusted oncology data quality foundation for future analytics, interoperability, and AI-assisted workflows.
 
 ---
 
@@ -174,9 +433,9 @@ retrieval_mode: live_myvariant_api_error
 ```text
 oncoreconcile-ai/
 ├── contracts/              # Shared API input/output contracts
-├── data/                   # Benchmark cases and alias dictionaries
-├── backend/                # FastAPI backend skeleton
-├── frontend/               # React frontend skeleton
+├── data/                   # Benchmark cases, aliases, review queue, evidence references
+├── backend/                # FastAPI backend
+├── frontend/               # React frontend
 ├── docs/                   # MVP, architecture, weekly plan, decisions
 ├── demo/                   # Demo script and screenshots
 └── .github/                # Issue templates, PR template, CI
@@ -186,20 +445,20 @@ oncoreconcile-ai/
 
 ## Quick Start: Backend
 
-Use Python 3.10, 3.11, or 3.12 for the backend. Avoid Python 3.14 with the
-current pinned dependencies because `pydantic-core==2.20.1` does not support it.
+Use Python 3.10, 3.11, or 3.12 for the backend.
+
+Avoid Python 3.14 with the current pinned dependencies because `pydantic-core==2.20.1` does not support it.
 
 ```bash
 cd backend
-python3.10 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 PYTHONPATH=. python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-If `python3.10` is not installed, `python3.11` or `python3.12` are also fine.
-The key is to create the virtual environment with one of those versions.
+If `python3.12` is not installed, `python3.10` or `python3.11` are also fine.
 
 Open:
 
@@ -207,7 +466,7 @@ Open:
 http://127.0.0.1:8000/docs
 ```
 
-Test:
+Test the API:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/reconcile \
@@ -222,17 +481,27 @@ cd backend
 PYTHONPATH=. python -m pytest -q
 ```
 
-Troubleshooting:
+Expected:
 
-If install fails with `pydantic-core` / `PyO3` and a message like
-`Python interpreter version (3.14) is newer than PyO3's maximum supported version`,
-delete the backend virtual environment and recreate it with Python 3.10-3.12:
+```text
+26 passed
+```
+
+### Backend Troubleshooting
+
+If install fails with `pydantic-core` / `PyO3` and a message like:
+
+```text
+Python interpreter version (3.14) is newer than PyO3's maximum supported version
+```
+
+delete the backend virtual environment and recreate it with Python 3.10–3.12:
 
 ```bash
 cd backend
 deactivate 2>/dev/null || true
 rm -rf .venv
-python3.10 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
@@ -249,17 +518,58 @@ npm install
 npm run dev
 ```
 
+To build the frontend:
+
+```bash
+npm run build
+```
+
+---
+
+## Development Workflow
+
+### Run Backend
+
+```bash
+cd backend
+source .venv/bin/activate
+PYTHONPATH=. python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+### Run Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+### Run Tests
+
+```bash
+cd backend
+PYTHONPATH=. python -m pytest -q
+```
+
+### Build Frontend
+
+```bash
+cd frontend
+npm run build
+```
+
 ---
 
 ## Team Working Rule
 
 AI can generate code, but humans own:
 
-- API contracts
-- MVP scope
-- integration
-- review logic
-- demo quality
+* API contracts
+* MVP scope
+* Integration decisions
+* Review logic
+* Governance logic
+* Benchmark quality
+* Demo quality
 
 Before coding, read:
 
@@ -270,16 +580,54 @@ Before coding, read:
 
 ---
 
-## This Week's Goal
+## Current Project Status
 
-Build one working vertical slice:
+Estimated completion:
 
 ```text
-CSV/manual input
-↓
-Backend reconciliation
-↓
-Result table
+~95%
 ```
 
-One working record is better than five disconnected components.
+Remaining work:
+
+* Demo polish
+* Additional benchmark coverage
+* Presentation materials
+* Final competition video
+* Documentation refinement
+
+---
+
+## Roadmap
+
+### Before Final Submission
+
+* Polish demo workflow
+* Add final screenshots
+* Expand benchmark examples
+* Improve evidence display
+* Finalize presentation deck
+* Record demo video
+
+### Future
+
+* CIViC live API integration
+* ClinVar API integration
+* ClinGen Allele Registry integration
+* GA4GH VRS objects
+* Cat-VRS serialization
+* VA-Spec-compatible export
+* HL7 FHIR Genomics interoperability
+* OMOP Oncology integration
+* LLM-assisted reviewer support
+
+---
+
+## License
+
+Competition prototype and research project.
+
+See repository license for details.
+
+```
+```
