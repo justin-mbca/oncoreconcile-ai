@@ -1,6 +1,3 @@
-You’re right — I stopped too early. Here is a **complete README.md** you can copy/paste into VS Code.
-
-````markdown
 # OncoReconcile AI
 
 ## Human-Governed Oncology Entity Reconciliation Platform
@@ -629,5 +626,4 @@ Competition prototype and research project.
 
 See repository license for details.
 
-```
 ```
