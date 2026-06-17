@@ -17,6 +17,7 @@ class EvidenceItem(BaseModel):
     evidence_type: Optional[str] = None
     confidence_weight: Optional[str] = None
     retrieval_mode: Optional[str] = None
+    external_id: Optional[str] = None
     url: Optional[str] = None
     timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -84,6 +85,12 @@ class ReviewQueueItem(BaseModel):
     curator_id: Optional[str] = None
     curator_notes: Optional[str] = None
     decision_timestamp: Optional[str] = None
+    created_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+    updated_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
 
 class ReviewQueueResponse(BaseModel):

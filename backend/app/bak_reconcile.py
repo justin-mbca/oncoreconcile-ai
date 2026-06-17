@@ -1,7 +1,6 @@
 import json
 import csv
 import re
-import requests
 from pathlib import Path
 from .models import ReconcileRequest, ReconcileResponse, CanonicalConcept, EvidenceItem
 
@@ -12,7 +11,6 @@ except ImportError:
     FUZZY_AVAILABLE = False
 
 from .explain import build_explanation
-from .external_lookup import lookup_myvariant
 from . import llm
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -77,240 +75,6 @@ def index_external_evidence(rows: list[dict]) -> dict[tuple[str, str], list[dict
     return index
 
 
-def index_disease_gene_catalog(rows: list[dict]) -> set[tuple[str, str]]:
-    pairs = set()
-    for row in rows:
-        disease = (row.get("disease") or "").strip()
-        gene = (row.get("gene") or "").strip()
-        if disease and gene:
-            pairs.add((disease.lower(), gene.upper()))
-    return pairs
-
-
-# ── External candidate lookup helpers ─────────────────────────────────────────
-# Governance rule:
-# External API hits are treated as REVIEW_REQUIRED candidates.
-# They do NOT auto-reconcile because external APIs may return related-but-not-exact records.
-
-_EXTERNAL_GENE_CACHE: dict[str, dict | None] = {}
-_EXTERNAL_VARIANT_CACHE: dict[tuple[str, str], list[dict]] = {}
-
-
-def _norm_token(value: str | None) -> str:
-    return (value or "").strip()
-
-
-def looks_like_protein_variant(value: str | None) -> bool:
-    """Simple MVP detector for common protein hotspot notation such as E545K, G12C, V600E."""
-    raw = _norm_token(value).upper()
-    return bool(re.fullmatch(r"[A-Z][0-9]{1,5}[A-Z]", raw))
-
-
-def local_gene_catalog_candidate_lookup(value: str | None, canonical_cancer: str | None) -> dict | None:
-    """Resolve a syntactically exact gene symbol known to local catalogs."""
-    raw = _norm_token(value).upper()
-    if not raw:
-        return None
-
-    catalog_rows = [
-        row
-        for row in VARIANT_CATALOG
-        if row.get("gene", "").strip().upper() == raw
-        and row.get("gene") not in {"REVIEW_REQUIRED", "CANNOT_RECONCILE"}
-    ]
-    if not catalog_rows:
-        return None
-
-    in_disease_catalog = (
-        bool(canonical_cancer)
-        and (canonical_cancer.lower(), raw) in DISEASE_GENE_CATALOG
-    )
-    in_variant_catalog_scope = any(
-        row.get("disease_scope") == canonical_cancer for row in catalog_rows
-    )
-    locally_supported = in_disease_catalog or in_variant_catalog_scope
-
-    if locally_supported:
-        reason = f"{raw} is listed for {canonical_cancer} in the local oncology catalog."
-    else:
-        reason = (
-            f"{raw} is known in the local gene/variant catalog, but this disease context "
-            "is not established in the local disease-gene catalog."
-        )
-
-    return {
-        "id": f"local:gene-catalog:{raw}",
-        "symbol": raw,
-        "name": raw,
-        "source": "Local Disease/Gene + Variant Catalog",
-        "reason": reason,
-        "requires_review": not locally_supported,
-        "match_method": "catalog" if locally_supported else "external_candidate",
-        "similarity": 1.0 if locally_supported else 0.85,
-        "url": None,
-    }
-
-
-def external_gene_candidate_lookup(value: str | None) -> dict | None:
-    """
-    Validate an unresolved gene symbol using MyGene.info.
-
-    Returns a candidate dict when a human gene symbol is found.
-    This is intentionally a candidate, not a final authoritative curation decision.
-    """
-    raw = _norm_token(value)
-    if not raw:
-        return None
-
-    cache_key = raw.upper()
-    if cache_key in _EXTERNAL_GENE_CACHE:
-        return _EXTERNAL_GENE_CACHE[cache_key]
-
-    try:
-        response = requests.get(
-            "https://mygene.info/v3/query",
-            params={
-                "q": f"symbol:{raw} OR alias:{raw}",
-                "species": "human",
-                "fields": "symbol,name,entrezgene,HGNC,alias",
-                "size": 5,
-            },
-            timeout=5,
-        )
-        response.raise_for_status()
-        hits = response.json().get("hits", [])
-
-        for hit in hits:
-            symbol = hit.get("symbol")
-            aliases = hit.get("alias") or []
-            if isinstance(aliases, str):
-                aliases = [aliases]
-
-            if symbol and (
-                symbol.upper() == raw.upper()
-                or raw.upper() in {str(a).upper() for a in aliases}
-            ):
-                candidate = {
-                    "id": f"external:mygene:{symbol}",
-                    "symbol": symbol,
-                    "name": hit.get("name") or symbol,
-                    "source": "MyGene.info API",
-                    "reason": f"MyGene.info returned human gene symbol {symbol} for input {raw}.",
-                    "requires_review": True,
-                    "url": f"https://mygene.info/v3/gene/{hit.get('entrezgene')}" if hit.get("entrezgene") else None,
-                }
-                _EXTERNAL_GENE_CACHE[cache_key] = candidate
-                return candidate
-
-    except Exception:
-        # Fail closed: no external candidate if API is unavailable.
-        pass
-
-    _EXTERNAL_GENE_CACHE[cache_key] = None
-    return None
-
-
-def _extract_civic_records(payload) -> list[dict]:
-    """Best-effort parser for different CIViC response shapes."""
-    if not isinstance(payload, dict):
-        return []
-    for key in ("records", "results", "variants"):
-        val = payload.get(key)
-        if isinstance(val, list):
-            return val
-    if isinstance(payload.get("data"), list):
-        return payload["data"]
-    return []
-
-
-def external_variant_candidate_lookup(gene: str | None, variant: str | None) -> list[dict]:
-    """
-    Search for candidate variant evidence when the local curated catalog cannot reconcile.
-
-    MVP behavior:
-    - Try local downloaded CIViC candidates.
-    - Try CIViC live API best-effort.
-    - If no CIViC hit but the gene is known and variant looks like a protein hotspot,
-      create a REVIEW_REQUIRED candidate based on variant syntax + gene context.
-    - Never auto-reconcile external candidates.
-    """
-    gene = _norm_token(gene).upper()
-    variant = _norm_token(variant)
-    if not gene or not variant:
-        return []
-
-    cache_key = (gene, variant.upper())
-    if cache_key in _EXTERNAL_VARIANT_CACHE:
-        return _EXTERNAL_VARIANT_CACHE[cache_key]
-
-    candidates = []
-    query = f"{gene} {variant}"
-
-    # 1) Local downloaded CIViC candidate rows, if present.
-    for row in CIVIC_CANDIDATES:
-        if row.get("query_gene", "").strip().upper() != gene:
-            continue
-        terms = " ".join([
-            row.get("molecular_profile", ""),
-            row.get("variant_name", ""),
-            row.get("variant_aliases", ""),
-        ]).upper()
-        if variant.upper() not in terms:
-            continue
-        variant_link = row.get("variant_link") or ""
-        url = f"https://civicdb.org{variant_link}" if variant_link.startswith("/") else None
-        candidates.append({
-            "id": f"external:civic-local:{row.get('variant_id') or row.get('evidence_item_id') or variant}",
-            "name": f"{gene} {variant.upper()}",
-            "source": "Local CIViC candidate CSV",
-            "reason": f"Local CIViC candidate row contains {query}.",
-            "requires_review": True,
-            "url": url,
-        })
-        if len(candidates) >= 3:
-            break
-
-    # 2) Best-effort live CIViC API query.
-    if not candidates:
-        try:
-            response = requests.get(
-                "https://civicdb.org/api/variants",
-                params={"query": query},
-                timeout=5,
-            )
-            if response.ok:
-                for item in _extract_civic_records(response.json())[:3]:
-                    name = item.get("name") or item.get("variant_name") or query
-                    candidates.append({
-                        "id": f"external:civic-api:{item.get('id') or name}",
-                        "name": f"{gene} {variant.upper()}",
-                        "source": "CIViC API candidate",
-                        "reason": f"CIViC API returned a possible record for {query}: {name}.",
-                        "requires_review": True,
-                        "url": f"https://civicdb.org/variants/{item.get('id')}" if item.get("id") else None,
-                    })
-        except Exception:
-            pass
-
-    # 3) Safe fallback: known gene + hotspot-like variant pattern.
-    # This is not claiming clinical evidence. It creates a candidate for human review.
-    if not candidates and looks_like_protein_variant(variant):
-        candidates.append({
-            "id": f"external:syntax-candidate:{gene}:{variant.upper()}",
-            "name": f"{gene} {variant.upper()}",
-            "source": "External fallback candidate",
-            "reason": (
-                f"{variant.upper()} matches common protein hotspot notation and {gene} is a recognized gene symbol. "
-                "This candidate requires curator review before adding to the local catalog."
-            ),
-            "requires_review": True,
-            "url": None,
-        })
-
-    _EXTERNAL_VARIANT_CACHE[cache_key] = candidates
-    return candidates
-
-
 CANCER_ALIASES = load_disease_aliases()
 GENE_ALIASES = load_json("gene_aliases.json")
 GENE_REVIEW_REQUIRED = load_json("gene_review_required.json")
@@ -319,7 +83,6 @@ VARIANT_CATALOG = load_variant_catalog()
 VARIANT_CATALOG_INDEX = index_variant_catalog(VARIANT_CATALOG)
 EXTERNAL_EVIDENCE = index_external_evidence(load_csv_rows("data/external_evidence_map.csv"))
 CIVIC_CANDIDATES = load_csv_rows("data/raw/civic_variant_candidates.csv")
-DISEASE_GENE_CATALOG = index_disease_gene_catalog(load_csv_rows("data/disease_gene_catalog.csv"))
 REVIEW_REQUIRED_GENE_TERMS = {
     term for term, canonical in GENE_ALIASES.items() if canonical == "REVIEW_REQUIRED"
 }
@@ -364,11 +127,7 @@ def fuzzy_match_gene(value: str):
     return None, 0, None
 
 
-def fuzzy_match_variant(
-    value: str,
-    canonical_gene: str | None,
-    canonical_cancer: str | None = None,
-):
+def fuzzy_match_variant(value: str, canonical_gene: str | None):
     """Return (catalog_row, score) or (None, 0)."""
     if not FUZZY_AVAILABLE or not canonical_gene:
         return None, 0
@@ -376,8 +135,6 @@ def fuzzy_match_variant(
     pool = []
     for row in VARIANT_CATALOG:
         if row.get("gene") != canonical_gene:
-            continue
-        if canonical_cancer and row.get("disease_scope") != canonical_cancer:
             continue
         pool.append((row["variant"], row))
         for alias in row.get("variant_aliases", "").split(";"):
@@ -400,7 +157,7 @@ def compute_confidence_score(
     cancer_ok: bool,
     gene_ok: bool,
     variant_ok: bool,
-    gene_match_method: str,   # "exact" | "catalog" | "fuzzy" | "external_candidate" | "none"
+    gene_match_method: str,   # "exact" | "fuzzy" | "none"
     variant_match_method: str,  # "catalog" | "fuzzy" | "alias" | "none"
     source_authority: float,   # 0.0–1.0: how authoritative is the source
     fuzzy_gene_score: float,   # 0–100 from rapidfuzz (normalised to 0–1)
@@ -420,17 +177,15 @@ def compute_confidence_score(
         variant_catalog  0.05
     """
     # match_type signal (0–1)
-    if gene_match_method in {"exact", "catalog"} and variant_match_method in ("catalog", "alias"):
+    if gene_match_method == "exact" and variant_match_method in ("catalog", "alias"):
         match_type_score = 1.0
-    elif gene_match_method in {"exact", "catalog"} and variant_match_method == "fuzzy":
+    elif gene_match_method == "exact" and variant_match_method == "fuzzy":
         match_type_score = 0.75
     elif gene_match_method == "fuzzy" and variant_match_method in ("catalog", "alias"):
         match_type_score = 0.65
     elif gene_match_method == "fuzzy" and variant_match_method == "fuzzy":
         match_type_score = 0.50
-    elif gene_match_method == "external_candidate" or variant_match_method == "external_candidate":
-        match_type_score = 0.40
-    elif gene_match_method in {"exact", "catalog"} or variant_match_method in ("catalog", "alias"):
+    elif gene_match_method == "exact" or variant_match_method in ("catalog", "alias"):
         match_type_score = 0.45
     elif gene_match_method == "fuzzy" or variant_match_method == "fuzzy":
         match_type_score = 0.30
@@ -438,8 +193,8 @@ def compute_confidence_score(
         match_type_score = 0.0
 
     # string_similarity signal (normalise fuzzy scores 0–100 → 0–1)
-    gene_sim = fuzzy_gene_score / 100.0 if gene_match_method in {"fuzzy", "external_candidate"} else (1.0 if gene_ok else 0.0)
-    variant_sim = fuzzy_variant_score / 100.0 if variant_match_method in {"fuzzy", "external_candidate"} else (1.0 if variant_ok else 0.0)
+    gene_sim = fuzzy_gene_score / 100.0 if gene_match_method == "fuzzy" else (1.0 if gene_ok else 0.0)
+    variant_sim = fuzzy_variant_score / 100.0 if variant_match_method == "fuzzy" else (1.0 if variant_ok else 0.0)
     string_similarity = (gene_sim + variant_sim) / 2
 
     # context_consistency signal
@@ -450,7 +205,7 @@ def compute_confidence_score(
     alias_coverage = resolved / 3.0
 
     # variant_catalog signal
-    catalog_score = 1.0 if variant_match_method == "catalog" else (0.25 if variant_match_method == "external_candidate" else (0.5 if variant_ok else 0.0))
+    catalog_score = 1.0 if variant_match_method == "catalog" else (0.5 if variant_ok else 0.0)
 
     breakdown = {
         "match_type":          round(match_type_score, 3),
@@ -547,12 +302,7 @@ def get_gene_cannot_reconcile(value: str):
     return value.strip() in CANNOT_RECONCILE_GENE_TERMS
 
 
-def find_catalog_variant(
-    value: str,
-    canonical_gene: str | None,
-    gene_review_required: bool,
-    canonical_cancer: str | None,
-):
+def find_catalog_variant(value: str, canonical_gene: str | None, gene_review_required: bool):
     raw = value.strip()
     candidate_genes = []
     if canonical_gene:
@@ -567,24 +317,14 @@ def find_catalog_variant(
             or VARIANT_CATALOG_INDEX.get((gene, raw.lower()))
         )
         if matches:
-            scoped_matches = [
-                row for row in matches
-                if not canonical_cancer or row.get("disease_scope") == canonical_cancer
-            ]
-            if scoped_matches:
-                return scoped_matches[0], "Variant catalog match", "catalog", 1.0
+            return matches[0], "Variant catalog match", "catalog", 1.0
 
     return None, None, "none", 0.0
 
 
-def normalize_variant(
-    value: str,
-    canonical_gene: str | None,
-    gene_review_required: bool = False,
-    canonical_cancer: str | None = None,
-):
+def normalize_variant(value: str, canonical_gene: str | None, gene_review_required: bool = False):
     catalog_row, catalog_reason, catalog_method, _ = find_catalog_variant(
-        value, canonical_gene, gene_review_required, canonical_cancer
+        value, canonical_gene, gene_review_required
     )
     if catalog_row:
         return catalog_row["variant"], catalog_reason, catalog_row, "catalog", 1.0
@@ -608,8 +348,8 @@ def normalize_variant(
             return mapped, "Variant synonym match", None, "alias", 1.0
 
     # Fuzzy variant fallback
-    if canonical_gene and not looks_like_protein_variant(raw):
-        fuzz_row, fuzz_score = fuzzy_match_variant(raw, canonical_gene, canonical_cancer)
+    if canonical_gene:
+        fuzz_row, fuzz_score = fuzzy_match_variant(raw, canonical_gene)
         if fuzz_row:
             return fuzz_row["variant"], f"Variant fuzzy match (score {fuzz_score})", fuzz_row, "fuzzy", fuzz_score / 100.0
 
@@ -824,7 +564,7 @@ def llm_review_suggestion(
 
 # ── Main reconcile ────────────────────────────────────────────────────────────
 
-def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> ReconcileResponse:
+def reconcile_record(req: ReconcileRequest) -> ReconcileResponse:
     audit_trail = ["Input received"]
 
     # Cancer type
@@ -848,46 +588,11 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
         gene_method = "none"
         gene_sim = 0.0
 
-    # External gene fallback:
-    # Only used when local gene alias/fuzzy matching did not resolve the gene.
-    # This creates a candidate for review and supports downstream variant lookup.
-    external_gene_candidate = None
-    if not canonical_gene and not gene_review_required and not gene_cannot_reconcile:
-        audit_trail.append("External gene candidate lookup attempted")
-        external_gene_candidate = (
-            local_gene_catalog_candidate_lookup(req.gene, canonical_cancer)
-            or external_gene_candidate_lookup(req.gene)
-        )
-        if external_gene_candidate:
-            canonical_gene = external_gene_candidate["symbol"]
-            gene_reason = external_gene_candidate["reason"]
-            gene_method = external_gene_candidate.get("match_method", "external_candidate")
-            gene_sim = external_gene_candidate.get("similarity", 0.85)
-            if gene_method == "catalog":
-                audit_trail.append("Local catalog gene match found")
-            else:
-                audit_trail.append("External gene candidate found")
-
     # Variant
     audit_trail.append("Variant lookup attempted")
     canonical_variant, variant_reason, variant_catalog_row, variant_method, variant_sim = normalize_variant(
-        req.variant, canonical_gene, bool(gene_review_required), canonical_cancer
+        req.variant, canonical_gene, bool(gene_review_required)
     )
-
-    # External variant fallback:
-    # If the local variant catalog/aliases cannot reconcile but the gene is known,
-    # create a REVIEW_REQUIRED external candidate rather than failing immediately.
-    external_variant_candidates = []
-    if not canonical_variant and canonical_gene and not gene_review_required and not gene_cannot_reconcile:
-        audit_trail.append("External variant candidate lookup attempted")
-        external_variant_candidates = external_variant_candidate_lookup(canonical_gene, req.variant)
-        if external_variant_candidates:
-            canonical_variant = external_variant_candidates[0]["name"]
-            variant_reason = "External API/syntax candidate lookup"
-            variant_catalog_row = None
-            variant_method = "external_candidate"
-            variant_sim = 0.70
-            audit_trail.append("External variant candidate found")
 
     # ── Build evidence list ───────────────────────────────────────────────────
     evidence = []
@@ -906,50 +611,13 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
 
     if gene_reason:
         audit_trail.append(f"Gene match ({gene_method})")
-        if gene_method == "external_candidate":
-            gene_candidate_source = external_gene_candidate.get("source", "External Gene API") if external_gene_candidate else "External Gene API"
-            is_local_gene_candidate = gene_candidate_source.startswith("Local")
-            evidence.append(EvidenceItem(
-                source=gene_candidate_source,
-                type="gene_catalog_candidate" if is_local_gene_candidate else "gene_external_candidate",
-                description=f"{req.gene} was mapped to candidate gene {canonical_gene}. {gene_reason} Human review is recommended before curation.",
-                evidence_type="local_gene_catalog_candidate" if is_local_gene_candidate else "external_gene_candidate",
-                confidence_weight="MEDIUM",
-                retrieval_mode="local_gene_variant_catalog_candidate" if is_local_gene_candidate else "external_mygene_api_candidate",
-                url=external_gene_candidate.get("url") if external_gene_candidate else None,
-            ))
-        elif gene_method == "catalog":
-            evidence.append(EvidenceItem(
-                source=external_gene_candidate.get("source", "Local Disease/Gene + Variant Catalog") if external_gene_candidate else "Local Disease/Gene + Variant Catalog",
-                type="gene_catalog_match",
-                description=f"{req.gene} was mapped to {canonical_gene}. {gene_reason}",
-                evidence_type="local_gene_catalog_match",
-                confidence_weight="HIGH",
-                retrieval_mode="local_gene_variant_catalog",
-                governance_standard="VA-Spec-inspired",
-            ))
-        else:
-            evidence.append(EvidenceItem(
-                source="Seed Knowledge Base / HGNC-inspired",
-                type="gene_alias",
-                description=f"{req.gene} was mapped to {canonical_gene} ({gene_method}).",
-                evidence_type="alias_dictionary_match",
-                confidence_weight="HIGH" if gene_method == "exact" else "MEDIUM",
-                retrieval_mode=f"local_{gene_method}_alias",
-            ))
-
-    if canonical_cancer and canonical_gene and (
-        canonical_cancer.lower(), canonical_gene.upper()
-    ) in DISEASE_GENE_CATALOG:
-        audit_trail.append("Disease-gene catalog evidence added")
         evidence.append(EvidenceItem(
-            source="Disease-Gene Catalog",
-            type="disease_gene_context",
-            description=f"{canonical_gene} is listed as a curated gene for {canonical_cancer}.",
-            evidence_type="disease_gene_catalog_match",
-            confidence_weight="MEDIUM",
-            retrieval_mode="local_disease_gene_catalog",
-            governance_standard="VA-Spec-inspired",
+            source="Seed Knowledge Base / HGNC-inspired",
+            type="gene_alias",
+            description=f"{req.gene} was mapped to {canonical_gene} ({gene_method}).",
+            evidence_type="alias_dictionary_match",
+            confidence_weight="HIGH" if gene_method == "exact" else "MEDIUM",
+            retrieval_mode=f"local_{gene_method}_alias",
         ))
 
     if gene_review_required:
@@ -1000,34 +668,16 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
 
     if variant_reason:
         audit_trail.append(f"Variant match ({variant_method})")
-        if variant_method == "external_candidate":
-            source = "Candidate Evidence Lookup"
-            confidence_weight = "MEDIUM"
-            evidence_type = "external_candidate_evidence"
-            retrieval_mode = "external_api_or_syntax_candidate"
-            description = (
-                f"{req.variant} was mapped to candidate variant {canonical_variant}. "
-                "This was found outside the local curated catalog and requires human review."
-            )
-        else:
-            source = "Curated Gene Variant Catalog" if variant_catalog_row else "Seed Knowledge Base"
-            confidence_weight = "HIGH" if variant_method == "catalog" else "MEDIUM"
-            evidence_type = "alias_dictionary_match"
-            retrieval_mode = f"local_{variant_method}"
-            description = f"{req.variant} was mapped to {canonical_variant} ({variant_method})."
-
+        source = "Curated Gene Variant Catalog" if variant_catalog_row else "Seed Knowledge Base"
+        confidence_weight = "HIGH" if variant_method == "catalog" else "MEDIUM"
         evidence.append(EvidenceItem(
             source=source,
-            type="variant_synonym" if variant_method != "external_candidate" else "variant_external_candidate",
-            description=description,
-            evidence_type=evidence_type,
+            type="variant_synonym",
+            description=f"{req.variant} was mapped to {canonical_variant} ({variant_method}).",
+            evidence_type="alias_dictionary_match",
             confidence_weight=confidence_weight,
-            retrieval_mode=retrieval_mode,
+            retrieval_mode=f"local_{variant_method}",
         ))
-
-        if variant_method == "external_candidate" and external_variant_candidates:
-            alternatives = external_variant_candidates
-            audit_trail.append("External candidate evidence generated; routed to REVIEW_REQUIRED")
 
         if variant_catalog_row and variant_catalog_row.get("mvp_status") == "REVIEW_REQUIRED":
             candidate_rows = catalog_review_candidate_rows(
@@ -1076,7 +726,7 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
 
     # ── Compute numeric confidence score ──────────────────────────────────────
     context_consistent = bool(canonical_cancer and canonical_gene and canonical_variant)
-    source_authority = 1.0 if variant_method == "catalog" else (0.8 if gene_method in {"exact", "catalog"} else 0.5)
+    source_authority = 1.0 if variant_method == "catalog" else (0.8 if gene_method == "exact" else 0.5)
 
     score_result = compute_confidence_score(
         cancer_ok=bool(canonical_cancer),
@@ -1123,48 +773,8 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
             confidence = "HIGH"
             review_status = "AUTO_RECONCILE"
 
-    # External candidates are never auto-reconciled in the MVP.
-    # They are useful evidence for curator review and future catalog expansion.
-    if gene_method == "external_candidate" or variant_method == "external_candidate":
-        confidence = "MEDIUM"
-        review_status = "REVIEW_REQUIRED"
-        confidence_score = min(max(confidence_score, 0.45), 0.74)
-        audit_trail.append("External candidate fallback requires human review")
-
     audit_trail.append(f"Confidence score: {confidence_score} ({confidence})")
     audit_trail.append(f"Review status decided: {review_status}")
-
-    live_external_evidence_found = False
-    live_external_lookup_error = False
-    should_external_lookup = allow_live_lookup and (
-        not canonical_cancer
-        or not canonical_gene
-        or not canonical_variant
-        or review_status in {"REVIEW_REQUIRED", "CANNOT_RECONCILE"}
-    )
-    if should_external_lookup and req.gene and req.variant:
-        audit_trail.append("Live MyVariant lookup started")
-        external_lookup_items = lookup_myvariant(req.gene, req.variant)
-        external_evidence_items = [EvidenceItem(**item) for item in external_lookup_items]
-        evidence.extend(external_evidence_items)
-        live_external_evidence_found = any(
-            item.evidence_type == "external_lookup"
-            and item.retrieval_mode == "live_myvariant_api"
-            for item in external_evidence_items
-        )
-        live_external_lookup_error = any(
-            item.evidence_type == "external_lookup_error"
-            for item in external_evidence_items
-        )
-        audit_trail.append(
-            f"Live MyVariant lookup completed: {len(external_evidence_items)} evidence item(s)"
-        )
-
-        if live_external_evidence_found:
-            confidence = "MEDIUM"
-            review_status = "REVIEW_REQUIRED"
-            confidence_score = min(max(confidence_score, 0.45), 0.74)
-            audit_trail.append("Live external evidence found; routed to human review")
 
     alternatives = llm_review_suggestion(
         req=req,
@@ -1186,16 +796,6 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
         notes.append(gene_review_required.get("reason", "Gene requires human review."))
         notes.append(f"Ambiguity preserved as {CATEGORICAL_NTRK_FUSION} with candidate genes.")
         audit_trail.append("Gene marked for human review")
-    if gene_method == "external_candidate":
-        notes.append("Gene was resolved from an external candidate lookup and should be curated before becoming an AUTO_RECONCILE rule.")
-    if gene_method == "catalog" and external_gene_candidate:
-        notes.append("Gene was resolved from local oncology catalog context.")
-    if variant_method == "external_candidate":
-        notes.append("Variant was found as an external candidate and requires human review before adding to the local catalog.")
-    if live_external_evidence_found:
-        notes.append("Live external evidence found; routed to human review.")
-    if live_external_lookup_error:
-        notes.append("External lookup failed; local reconciliation result is preserved.")
     if not canonical_gene:
         notes.append("Gene could not be reconciled.")
         audit_trail.append("Gene unresolved")

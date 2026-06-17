@@ -2,7 +2,7 @@
 
 ## Human-Governed Oncology Reconciliation Workbench
 
-OncoReconcile AI transforms messy oncology entities into trusted canonical oncology concepts with evidence, explainability, confidence scoring, and human review recommendations.
+OncoReconcile AI transforms messy oncology entities into canonical oncology candidates with evidence, explainability, confidence scoring, and human-governed review.
 
 This project is being developed for the DFWIT AI & Startup Competition by Team Variant Vanguard.
 
@@ -49,10 +49,12 @@ These inconsistencies make it difficult to support:
 - Cancer type reconciliation
 - Gene reconciliation
 - Variant reconciliation
-- Evidence context
-- AI-generated explanation
+- Local and live external evidence context
+- Deterministic explanation with an optional review-only LLM suggestion
 - Confidence scoring
-- Review recommendation
+- Persistent human review queue
+- Curator approve, reject, edit, note, and reopen actions
+- Benchmark validation dashboard
 - Result table
 - CSV/JSON output
 
@@ -83,9 +85,11 @@ Variant Reconciliation
 ↓
 Canonical Oncology Concept
 ↓
-Evidence Retrieval
+Local Evidence Retrieval
 ↓
-AI Explanation
+Adaptive MyVariant.info Evidence Retrieval (when needed)
+↓
+Deterministic Explanation
 ↓
 Confidence Recommendation
 ↓
@@ -107,6 +111,61 @@ Every input record should end in one of three states:
 | AUTO_RECONCILE | High-confidence match |
 | REVIEW_REQUIRED | Ambiguous or medium-confidence match |
 | CANNOT_RECONCILE | No reliable match found |
+
+---
+
+## Evidence And Governance
+
+The MVP uses two evidence layers:
+
+- **Local evidence:** alias dictionaries, disease-gene context, curated variant catalog, local CIViC candidate rows, and curated external-reference mappings.
+- **Live external evidence:** advisory MyVariant.info lookup for unresolved or review-required gene/variant inputs.
+
+Live external evidence:
+
+- supports human review only
+- never directly produces `AUTO_RECONCILE`
+- includes source, retrieval mode, timestamp, external ID, and source URL when available
+- fails gracefully with an error evidence record when the API is unavailable
+
+Review-required responses are persisted in:
+
+```text
+data/review_queue.json
+```
+
+The same input uses a stable review key when no `case_id` is supplied, preventing duplicate queue records. Approve, reject, edit, reviewer notes, and reopen decisions are also persisted.
+
+Approved reviews do not automatically modify `data/gene_variant_catalog.csv`. A disabled `promote_candidate_to_catalog()` roadmap stub makes catalog promotion an explicit future governance action.
+
+Standards language:
+
+- The evidence and audit model is **VA-Spec-inspired**, not VA-Spec compliant.
+- The ambiguity-preservation layer is **Cat-VRS-inspired**, not an official Cat-VRS implementation.
+
+---
+
+## Live Evidence Example
+
+```bash
+curl -X POST http://127.0.0.1:8000/reconcile \
+  -H "Content-Type: application/json" \
+  -d '{"cancer_type":"NSCLC","gene":"EGFR","variant":"C797S"}'
+```
+
+Expected status: `REVIEW_REQUIRED`.
+
+If MyVariant.info is available, the response includes evidence with:
+
+```text
+retrieval_mode: live_myvariant_api
+```
+
+If it is unavailable, reconciliation still succeeds and records:
+
+```text
+retrieval_mode: live_myvariant_api_error
+```
 
 ---
 
@@ -154,6 +213,13 @@ Test:
 curl -X POST http://127.0.0.1:8000/reconcile \
   -H "Content-Type: application/json" \
   -d '{"cancer_type":"NSCLC","gene":"HER2","variant":"Amplification"}'
+```
+
+Run backend tests without requiring internet:
+
+```bash
+cd backend
+PYTHONPATH=. python -m pytest -q
 ```
 
 Troubleshooting:

@@ -155,3 +155,8 @@ case_153,NSCLC,unknown_gene,unknown_variant,Lung Non-Small Cell Carcinoma,CANNOT
 case_154,NSCLC,unknown_gene,unknown alteration,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Explicit cannot-reconcile benchmark support.
 case_155,NSCLC,unknown_gene,XYZ999,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Synthetic invalid examples for safe failure testing.
 case_156,NSCLC,unknown_gene,ABC123,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Synthetic invalid examples for safe failure testing.
+case_157,NSCLC,EGFR,C797S,Lung Non-Small Cell Carcinoma,EGFR,EGFR C797S,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
+case_158,AML,IDH1,R132C,Acute Myeloid Leukemia,IDH1,IDH1 R132C,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
+case_159,AML,IDH2,R172K,Acute Myeloid Leukemia,IDH2,IDH2 R172K,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
+case_160,Melanoma,BRAF,K601E,Melanoma,BRAF,BRAF K601E,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
+case_161,Breast Cancer,PIK3CA,H1047L,Breast Invasive Carcinoma,PIK3CA,PIK3CA H1047L,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.

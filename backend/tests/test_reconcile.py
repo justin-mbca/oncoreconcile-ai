@@ -1,17 +1,40 @@
 import csv
+import json
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 from app.models import ReconcileRequest
 from app.reconcile import reconcile_record
 from app import reconcile as reconcile_module
+from app import external_lookup
+from app import review_store
 
 
 ROOT = Path(__file__).resolve().parents[2]
 BENCHMARK_PATH = ROOT / "data" / "benchmark_cases.csv"
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def isolate_review_queue_and_live_lookup(monkeypatch):
+    original_review_queue = (
+        review_store.REVIEW_QUEUE_PATH.read_text(encoding="utf-8")
+        if review_store.REVIEW_QUEUE_PATH.exists()
+        else None
+    )
+    monkeypatch.setattr(reconcile_module, "lookup_myvariant", lambda gene, variant: [])
+    review_store.clear_queue()
+    yield
+    review_store.clear_queue()
+    if original_review_queue is None:
+        review_store.REVIEW_QUEUE_PATH.unlink(missing_ok=True)
+    else:
+        review_store.REVIEW_QUEUE_PATH.write_text(original_review_queue, encoding="utf-8")
+    review_store._store.clear()
+    review_store._load_store()
 
 
 def load_benchmark_cases():
@@ -33,7 +56,7 @@ def expected_optional_variant(row):
 
 def test_benchmark_cases_file_is_well_formed():
     rows = load_benchmark_cases()
-    assert len(rows) == 156
+    assert len(rows) == 161
     assert {row["expected_status"] for row in rows} == {
         "AUTO_RECONCILE",
         "REVIEW_REQUIRED",
@@ -132,6 +155,32 @@ def test_catalog_review_required_variant_generates_governance_evidence_and_candi
     }
 
 
+def test_local_catalog_gene_with_scoped_variant_auto_reconciles():
+    req = ReconcileRequest(cancer_type="Breast Cancer", gene="PIK3CA", variant="E545K")
+    result = reconcile_record(req)
+
+    assert result.review_status == "AUTO_RECONCILE"
+    assert result.confidence == "HIGH"
+    assert result.canonical.cancer_type == "Breast Invasive Carcinoma"
+    assert result.canonical.gene == "PIK3CA"
+    assert result.canonical.variant == "PIK3CA E545K"
+    assert any(item.evidence_type == "local_gene_catalog_match" for item in result.evidence)
+
+
+def test_cross_context_variant_candidate_routes_to_human_review():
+    req = ReconcileRequest(cancer_type="NSCLC", gene="PIK3CA", variant="E545K")
+    result = reconcile_record(req)
+
+    assert result.review_status == "REVIEW_REQUIRED"
+    assert result.confidence == "MEDIUM"
+    assert result.canonical.cancer_type == "Lung Non-Small Cell Carcinoma"
+    assert result.canonical.gene == "PIK3CA"
+    assert result.canonical.variant == "PIK3CA E545K"
+    assert any(item.evidence_type == "local_gene_catalog_candidate" for item in result.evidence)
+    assert any(item.evidence_type == "external_candidate_evidence" for item in result.evidence)
+    assert "External candidate fallback requires human review" in " ".join(result.audit_trail)
+
+
 def test_unknown_gene_routes_to_cannot_reconcile():
     req = ReconcileRequest(cancer_type="NSCLC", gene="unknown_gene", variant="unknown_variant")
     result = reconcile_record(req)
@@ -183,6 +232,114 @@ def test_external_evidence_sources_are_added_for_catalog_matches():
     assert "External evidence references added" in " ".join(result.audit_trail)
 
 
+def test_myvariant_lookup_success_returns_evidence(monkeypatch):
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {
+                "hits": [
+                    {
+                        "_id": "chr7:g.55181378A>T",
+                        "clinvar": {"rcv": []},
+                        "dbsnp": {"rsid": "rs123"},
+                    }
+                ]
+            }
+
+    monkeypatch.setattr(external_lookup.httpx, "get", lambda *args, **kwargs: FakeResponse())
+
+    evidence = external_lookup.lookup_myvariant("EGFR", "C797S")
+
+    assert len(evidence) == 1
+    assert evidence[0]["source"] == "MyVariant.info"
+    assert evidence[0]["evidence_type"] == "external_lookup"
+    assert evidence[0]["retrieval_mode"] == "live_myvariant_api"
+    assert evidence[0]["external_id"] == "chr7:g.55181378A>T"
+
+
+def test_myvariant_lookup_failure_returns_error_evidence(monkeypatch):
+    def fail_request(*args, **kwargs):
+        raise RuntimeError("network unavailable")
+
+    monkeypatch.setattr(external_lookup.httpx, "get", fail_request)
+
+    evidence = external_lookup.lookup_myvariant("EGFR", "C797S")
+
+    assert len(evidence) == 1
+    assert evidence[0]["evidence_type"] == "external_lookup_error"
+    assert evidence[0]["retrieval_mode"] == "live_myvariant_api_error"
+    assert "network unavailable" in evidence[0]["description"]
+
+
+def test_unknown_local_variant_triggers_myvariant_lookup(monkeypatch):
+    def fake_lookup(gene, variant):
+        return [{
+            "source": "MyVariant.info",
+            "type": "external_variant_lookup",
+            "description": f"External evidence candidate found for {gene} {variant}.",
+            "evidence_type": "external_lookup",
+            "confidence_weight": "LOW",
+            "retrieval_mode": "live_myvariant_api",
+            "external_id": "myvariant:EGFR-C797S",
+            "timestamp": "2026-06-17T00:00:00+00:00",
+        }]
+
+    monkeypatch.setattr(reconcile_module, "external_variant_candidate_lookup", lambda gene, variant: [])
+    monkeypatch.setattr(reconcile_module, "lookup_myvariant", fake_lookup)
+
+    result = reconcile_record(ReconcileRequest(cancer_type="NSCLC", gene="EGFR", variant="C797S"))
+
+    assert result.review_status == "REVIEW_REQUIRED"
+    assert any(item.retrieval_mode == "live_myvariant_api" for item in result.evidence)
+    assert "Live MyVariant lookup started" in " ".join(result.audit_trail)
+    assert "Live MyVariant lookup completed: 1 evidence item(s)" in " ".join(result.audit_trail)
+
+
+def test_external_evidence_turns_cannot_reconcile_into_review_required(monkeypatch):
+    def fake_lookup(gene, variant):
+        return [{
+            "source": "MyVariant.info",
+            "type": "external_variant_lookup",
+            "description": f"External evidence candidate found for {gene} {variant}.",
+            "evidence_type": "external_lookup",
+            "confidence_weight": "LOW",
+            "retrieval_mode": "live_myvariant_api",
+            "external_id": "myvariant:unknown",
+            "timestamp": "2026-06-17T00:00:00+00:00",
+        }]
+
+    monkeypatch.setattr(reconcile_module, "external_variant_candidate_lookup", lambda gene, variant: [])
+    monkeypatch.setattr(reconcile_module, "lookup_myvariant", fake_lookup)
+
+    response = client.post(
+        "/reconcile",
+        json={"case_id": "myvariant-review-1", "cancer_type": "NSCLC", "gene": "unknown_gene", "variant": "C797S"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["review_status"] == "REVIEW_REQUIRED"
+    assert any(item["retrieval_mode"] == "live_myvariant_api" for item in payload["evidence"])
+    assert "Live external evidence found; routed to human review" in " ".join(payload["audit_trail"])
+
+    persisted = json.loads(review_store.REVIEW_QUEUE_PATH.read_text(encoding="utf-8"))
+    assert any(item["case_id"] == "myvariant-review-1" for item in persisted["items"])
+
+
+def test_auto_reconcile_does_not_run_myvariant_lookup(monkeypatch):
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("AUTO_RECONCILE should not call live MyVariant lookup")
+
+    monkeypatch.setattr(reconcile_module, "lookup_myvariant", fail_if_called)
+
+    result = reconcile_record(ReconcileRequest(cancer_type="NSCLC", gene="EGFR", variant="Ex19del"))
+
+    assert result.review_status == "AUTO_RECONCILE"
+    assert not any(item.retrieval_mode == "live_myvariant_api" for item in result.evidence)
+
+
 def test_llm_suggestion_is_review_required_only(monkeypatch):
     def fake_disambiguate(entity_type, input_value, candidates, context):
         return {
@@ -220,12 +377,15 @@ def test_benchmark_endpoint_reports_mvp_metrics():
     assert response.status_code == 200
     payload = response.json()
 
-    assert payload["total_cases"] == 156
+    assert payload["total_cases"] == 161
     assert payload["accuracy"] >= 0.90
     assert payload["coverage"] >= 0.95
     assert "review_rate" in payload
     assert payload["target_status"]["accuracy"] is True
     assert payload["target_status"]["coverage"] is True
+    assert payload["counts"]["total_records"] == 161
+    assert "candidate_evidence_cases" in payload["counts"]
+    assert "approved_review_cases" in payload["counts"]
 
 
 def test_review_queue_edit_decision_records_audit_trail():
@@ -256,6 +416,65 @@ def test_review_queue_edit_decision_records_audit_trail():
     assert item["canonical"]["gene"] == "NTRK1"
     assert item["decision_timestamp"]
     assert any("Human review decision: edit" in entry for entry in item["audit_trail"])
+
+
+def test_review_queue_items_and_decisions_are_persisted_to_file():
+    reconcile_response = client.post(
+        "/reconcile",
+        json={"case_id": "persist-review-1", "cancer_type": "AML", "gene": "IDH2", "variant": "R172K"},
+    )
+    assert reconcile_response.status_code == 200
+    assert reconcile_response.json()["review_status"] == "REVIEW_REQUIRED"
+
+    persisted = json.loads(review_store.REVIEW_QUEUE_PATH.read_text(encoding="utf-8"))
+    persisted_item = next(item for item in persisted["items"] if item["case_id"] == "persist-review-1")
+    assert persisted_item["canonical"]["variant"] == "IDH2 R172K"
+    assert persisted_item["decision"] is None
+
+    decision_response = client.post(
+        "/review-queue/persist-review-1/decision",
+        json={
+            "case_id": "persist-review-1",
+            "decision": "approve",
+            "curator_id": "curator-test",
+            "notes": "Approved after curator review.",
+        },
+    )
+    assert decision_response.status_code == 200
+
+    persisted = json.loads(review_store.REVIEW_QUEUE_PATH.read_text(encoding="utf-8"))
+    persisted_item = next(item for item in persisted["items"] if item["case_id"] == "persist-review-1")
+    assert persisted_item["decision"] == "approve"
+    assert persisted_item["curator_id"] == "curator-test"
+    assert persisted_item["created_at"]
+    assert persisted_item["updated_at"]
+    assert any("Human review decision: approve" in entry for entry in persisted_item["audit_trail"])
+
+
+def test_review_queue_uses_stable_key_and_avoids_duplicates():
+    payload = {"cancer_type": "AML", "gene": "IDH2", "variant": "R172K"}
+
+    first = client.post("/reconcile", json=payload)
+    second = client.post("/reconcile", json=payload)
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    queue = client.get("/review-queue?status=all").json()
+    assert queue["total"] == 1
+    assert queue["items"][0]["case_id"].startswith("review-")
+
+
+def test_promote_to_catalog_is_an_explicit_disabled_stub():
+    client.post(
+        "/reconcile",
+        json={"case_id": "promote-stub-1", "cancer_type": "AML", "gene": "IDH2", "variant": "R172K"},
+    )
+
+    response = client.post("/review-queue/promote-stub-1/promote")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "not_implemented"
+    assert "do not modify" in response.json()["message"].lower()
 
 
 def test_review_queue_reopen_moves_item_back_to_pending():

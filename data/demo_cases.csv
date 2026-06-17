@@ -10,5 +10,6 @@ workflow_008,Cat-VRS categorical ambiguity,NSCLC,TRK,fusion,REVIEW_REQUIRED
 workflow_009,Variant ambiguity candidates,Melanoma,BRAF,V600,REVIEW_REQUIRED
 workflow_010,Catalog review required,NSCLC,EGFR,Exon20ins,REVIEW_REQUIRED
 workflow_011,LLM-gated review suggestion,NSCLC,KRAS,mutation,REVIEW_REQUIRED
-workflow_012,Cannot reconcile safe failure,NSCLC,unknown_gene,G12C,CANNOT_RECONCILE
-workflow_013,Cross-disease HER2 alias,Breast Cancer,HER2,HER2+,AUTO_RECONCILE
+workflow_012,External candidate review,NSCLC,PIK3CA,E545K,REVIEW_REQUIRED
+workflow_013,Cannot reconcile safe failure,NSCLC,unknown_gene,G12C,CANNOT_RECONCILE
+workflow_014,Cross-disease HER2 alias,Breast Cancer,HER2,HER2+,AUTO_RECONCILE

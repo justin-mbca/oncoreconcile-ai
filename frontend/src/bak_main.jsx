@@ -59,24 +59,11 @@ function EvidenceList({ evidence }) {
         <li key={i} style={{ marginBottom:6, fontSize:13 }}>
           <strong>{e.type}</strong> — {e.description}
           <span style={{ color:"#888", fontSize:11 }}> [{e.source}]</span>
-          {e.url && (
-            <a href={e.url} target="_blank" rel="noreferrer" style={{ marginLeft:6, fontSize:11 }}>
-              Open Source
-            </a>
-          )}
           {(e.evidence_type || e.confidence_weight || e.governance_standard) && (
             <div style={{ color:"#777", fontSize:11, marginTop:2 }}>
               {e.evidence_type && <span>{e.evidence_type}</span>}
               {e.confidence_weight && <span> · {e.confidence_weight}</span>}
-              {e.retrieval_mode && <span> · {e.retrieval_mode}</span>}
               {e.governance_standard && <span> · {e.governance_standard}</span>}
-            </div>
-          )}
-          {(e.external_id || e.timestamp) && (
-            <div style={{ color:"#777", fontSize:11, marginTop:2 }}>
-              {e.external_id && <span>External ID: {e.external_id}</span>}
-              {e.external_id && e.timestamp && <span> · </span>}
-              {e.timestamp && <span>{e.timestamp}</span>}
             </div>
           )}
         </li>
@@ -85,41 +72,16 @@ function EvidenceList({ evidence }) {
   );
 }
 
-function EvidenceGroups({ evidence }) {
-  const liveEvidence = evidence?.filter(e => e.retrieval_mode?.startsWith("live_")) || [];
-  const localEvidence = evidence?.filter(e => !e.retrieval_mode?.startsWith("live_")) || [];
-  return (
-    <>
-      <p style={{ fontSize:12, fontWeight:"bold", margin:"6px 0 4px" }}>Local / Candidate Evidence</p>
-      <EvidenceList evidence={localEvidence}/>
-      {liveEvidence.length > 0 && (
-        <>
-          <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px", color:"#0969da" }}>
-            Live External API Evidence
-          </p>
-          <EvidenceList evidence={liveEvidence}/>
-        </>
-      )}
-    </>
-  );
-}
-
 function ResultCard({ result }) {
   const [expanded, setExpanded] = useState(false);
   if (!result) return null;
   const { canonical, confidence, confidence_score, score_breakdown, review_status, explanation, evidence, alternatives, notes, audit_trail } = result;
-  const externalEvidenceCount = evidence?.filter(e => e.retrieval_mode === "live_myvariant_api").length || 0;
   return (
     <div style={{ border:"1px solid #ddd", borderRadius:8, padding:16, background:"#fafafa", marginTop:12 }}>
       <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:10, flexWrap:"wrap" }}>
         <Badge label={review_status} color={STATUS_COLOR[review_status]}/>
         <Badge label={confidence} color={CONF_COLOR[confidence]}/>
         <span style={{ fontSize:13, color:"#555" }}>Score: <strong>{(confidence_score*100).toFixed(0)}%</strong></span>
-        {externalEvidenceCount > 0 && (
-          <span style={{ fontSize:12, color:"#0969da", fontWeight:"bold" }}>
-            External evidence: {externalEvidenceCount}
-          </span>
-        )}
       </div>
 
       {/* Canonical */}
@@ -167,7 +129,8 @@ function ResultCard({ result }) {
       </button>
       {expanded && (
         <div style={{ marginTop:8 }}>
-          <EvidenceGroups evidence={evidence}/>
+          <p style={{ fontSize:12, fontWeight:"bold", margin:"6px 0 4px" }}>Evidence</p>
+          <EvidenceList evidence={evidence}/>
           <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px" }}>Audit trail</p>
           <ol style={{ fontSize:11, color:"#666", paddingLeft:16, margin:0 }}>
             {audit_trail?.map((s,i)=><li key={i}>{s}</li>)}
@@ -180,139 +143,17 @@ function ResultCard({ result }) {
 
 // ── PAGE: Single record ───────────────────────────────────────────────────────
 const EXAMPLES = [
-  {
-    id:"step_001",
-    label:"Exact alias + catalog",
-    type:"Exact Alias / Catalog",
-    cancer_type:"NSCLC",
-    gene:"HER2",
-    variant:"amp",
-    expected_status:"AUTO_RECONCILE",
-    description:"Disease alias + gene alias + catalog variant + external evidence."
-  },
-  {
-    id:"step_004",
-    label:"Variant alias",
-    type:"Variant Alias",
-    cancer_type:"NSCLC",
-    gene:"EGFR",
-    variant:"Ex19del",
-    expected_status:"AUTO_RECONCILE",
-    description:"Variant synonym/catalog normalization with evidence."
-  },
-  {
-    id:"fuzzy_001",
-    label:"Fuzzy disease",
-    type:"Fuzzy Match",
-    cancer_type:"non-small cell lung carcinom",
-    gene:"EGFR",
-    variant:"Ex19del",
-    expected_status:"AUTO_RECONCILE",
-    description:"Misspelled disease term resolved by RapidFuzz."
-  },
-  {
-    id:"fuzzy_002",
-    label:"Fuzzy gene",
-    type:"Fuzzy Match",
-    cancer_type:"NSCLC",
-    gene:"ERBB-2",
-    variant:"amp",
-    expected_status:"AUTO_RECONCILE",
-    description:"Gene punctuation/typo resolved to canonical gene."
-  },
-  {
-    id:"fuzzy_003",
-    label:"Fuzzy variant",
-    type:"Fuzzy Match",
-    cancer_type:"NSCLC",
-    gene:"EGFR",
-    variant:"Exon 19 deletin",
-    expected_status:"AUTO_RECONCILE",
-    description:"Variant typo resolved to catalog synonym."
-  },
-  {
-    id:"step_005",
-    label:"Cat-VRS ambiguity",
-    type:"Cat-VRS-style Ambiguity",
-    cancer_type:"NSCLC",
-    gene:"TRK",
-    variant:"pan-trk fusion",
-    expected_status:"REVIEW_REQUIRED",
-    description:"Ambiguous TRK/NTRK-family fusion is preserved and routed to review."
-  },
-  {
-    id:"step_006",
-    label:"Catalog review",
-    type:"Review Required",
-    cancer_type:"NSCLC",
-    gene:"EGFR",
-    variant:"Exon20ins",
-    expected_status:"REVIEW_REQUIRED",
-    description:"Known variant category that should not be auto-reconciled."
-  },
-  {
-    id:"llm_004",
-    label:"LLM review hook",
-    type:"LLM-gated Review",
-    cancer_type:"NSCLC",
-    gene:"KRAS",
-    variant:"mutation",
-    expected_status:"REVIEW_REQUIRED",
-    description:"Generic mutation triggers human review and optional LLM suggestion."
-  },
-  {
-    id:"external_001",
-    label:"External candidate",
-    type:"External Candidate",
-    cancer_type:"NSCLC",
-    gene:"PIK3CA",
-    variant:"E545K",
-    expected_status:"REVIEW_REQUIRED",
-    description:"Known hotspot syntax outside the trusted local disease context becomes a review candidate."
-  },
-  {
-    id:"step_007",
-    label:"Safe failure",
-    type:"Cannot Reconcile",
-    cancer_type:"NSCLC",
-    gene:"unknown_gene",
-    variant:"G12C",
-    expected_status:"CANNOT_RECONCILE",
-    description:"Unknown gene safely fails instead of guessing."
-  },
-  {
-    id:"step_010",
-    label:"No trusted match",
-    type:"Cannot Reconcile",
-    cancer_type:"NSCLC",
-    gene:"FAKE_GENE_XYZ",
-    variant:"FAKE_VARIANT_XYZ",
-    expected_status:"CANNOT_RECONCILE",
-    description:"No trusted gene or variant evidence exists."
-  },
+  { label:"Raw Disease Alias", cancer_type:"NSCLC", gene:"EGFR", variant:"Ex19del" },
+  { label:"Gene Alias", cancer_type:"NSCLC", gene:"HER1", variant:"L858R" },
+  { label:"Variant Alias", cancer_type:"NSCLC", gene:"HER2", variant:"amp" },
+  { label:"Catalog Match", cancer_type:"Melanoma", gene:"BRAF", variant:"V600E" },
+  { label:"Disease Fuzzy", cancer_type:"melanomaa", gene:"BRAF", variant:"V600E" },
+  { label:"Gene Fuzzy", cancer_type:"NSCLC", gene:"ERRB2", variant:"amp" },
+  { label:"Variant Fuzzy", cancer_type:"NSCLC", gene:"EGFR", variant:"Ex19dele" },
+  { label:"TRK Cat-VRS Review", cancer_type:"NSCLC", gene:"TRK", variant:"fusion" },
+  { label:"LLM Review Hook", cancer_type:"NSCLC", gene:"KRAS", variant:"mutation" },
+  { label:"Cannot Reconcile", cancer_type:"NSCLC", gene:"unknown_gene", variant:"G12C" },
 ];
-
-const EXAMPLE_TYPE_ORDER = [
-  "Exact Alias / Catalog",
-  "Variant Alias",
-  "Fuzzy Match",
-  "Cat-VRS-style Ambiguity",
-  "Review Required",
-  "LLM-gated Review",
-  "External Candidate",
-  "Cannot Reconcile",
-];
-
-const EXAMPLE_TYPE_HELP = {
-  "Exact Alias / Catalog": "High-confidence deterministic mapping from curated dictionaries and catalogs.",
-  "Variant Alias": "Variant synonym normalization against the gene-specific variant catalog.",
-  "Fuzzy Match": "Typo-tolerant matching using string similarity after exact lookup fails.",
-  "Cat-VRS-style Ambiguity": "Preserves uncertainty as a categorical variation instead of forcing precision.",
-  "Review Required": "Known or plausible entity that needs human review before approval.",
-  "LLM-gated Review": "LLM may suggest a candidate only after deterministic logic has routed the case to review.",
-  "External Candidate": "Plausible evidence found outside the local trusted disease context, routed to review.",
-  "Cannot Reconcile": "Safe failure when the system lacks trusted evidence."
-};
 
 const REVIEW_EXAMPLES = [
   { label:"TRK Fusion", cancer_type:"NSCLC", gene:"TRK", variant:"fusion" },
@@ -333,9 +174,8 @@ const SAMPLE_CSV_ROWS = [
   { case_id:"workflow_009", workflow_step:"Variant ambiguity candidates", cancer_type:"Melanoma", gene:"BRAF", variant:"V600", expected_status:"REVIEW_REQUIRED" },
   { case_id:"workflow_010", workflow_step:"Catalog review required", cancer_type:"NSCLC", gene:"EGFR", variant:"Exon20ins", expected_status:"REVIEW_REQUIRED" },
   { case_id:"workflow_011", workflow_step:"LLM-gated review suggestion", cancer_type:"NSCLC", gene:"KRAS", variant:"mutation", expected_status:"REVIEW_REQUIRED" },
-  { case_id:"workflow_012", workflow_step:"External candidate review", cancer_type:"NSCLC", gene:"PIK3CA", variant:"E545K", expected_status:"REVIEW_REQUIRED" },
-  { case_id:"workflow_013", workflow_step:"Cannot reconcile safe failure", cancer_type:"NSCLC", gene:"unknown_gene", variant:"G12C", expected_status:"CANNOT_RECONCILE" },
-  { case_id:"workflow_014", workflow_step:"Cross-disease HER2 alias", cancer_type:"Breast Cancer", gene:"HER2", variant:"HER2+", expected_status:"AUTO_RECONCILE" },
+  { case_id:"workflow_012", workflow_step:"Cannot reconcile safe failure", cancer_type:"NSCLC", gene:"unknown_gene", variant:"G12C", expected_status:"CANNOT_RECONCILE" },
+  { case_id:"workflow_013", workflow_step:"Cross-disease HER2 alias", cancer_type:"Breast Cancer", gene:"HER2", variant:"HER2+", expected_status:"AUTO_RECONCILE" },
 ];
 
 const SAMPLE_CSV_HEADERS = ["case_id","workflow_step","cancer_type","gene","variant","expected_status"];
@@ -345,142 +185,49 @@ const SAMPLE_CSV_TEXT = [
   ...SAMPLE_CSV_ROWS.map(row => SAMPLE_CSV_HEADERS.map(header => row[header]).join(",")),
 ].join("\n");
 
-function statusBadgeColor(status) {
-  return STATUS_COLOR[status] || "#555";
-}
-
-function ExampleCard({ example, onLoad, onRun, loading }) {
-  return (
-    <div className="example-card">
-      <div className="example-card-header">
-        <span className="example-type">{example.type}</span>
-        <Badge label={example.expected_status} color={statusBadgeColor(example.expected_status)} />
-      </div>
-      <h4>{example.label}</h4>
-      <p>{example.description}</p>
-      <div className="example-values">
-        <code>{example.cancer_type}</code>
-        <code>{example.gene}</code>
-        <code>{example.variant}</code>
-      </div>
-      <div className="example-actions">
-        <button type="button" onClick={() => onLoad(example)} className="secondary-button">
-          Load
-        </button>
-        <button type="button" onClick={() => onRun(example)} className="primary-mini-button" disabled={loading}>
-          Run
-        </button>
-      </div>
-    </div>
-  );
-}
-
 function SinglePage() {
   const [form, setForm] = useState({ cancer_type:"NSCLC", gene:"HER2", variant:"Amplification" });
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedType, setSelectedType] = useState("All");
 
-  async function submit(overrideForm = null) {
-    const payload = overrideForm || form;
+  async function submit() {
     setError(""); setResult(null); setLoading(true);
     try {
-      const r = await apiFetch("/reconcile", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+      const r = await apiFetch("/reconcile", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(form) });
       if (!r.ok) throw new Error(`API error ${r.status}`);
       setResult(await r.json());
     } catch(e) { setError(e.message); }
     finally { setLoading(false); }
   }
 
-  function loadExample(example) {
-    setForm({
-      case_id: example.id,
-      cancer_type: example.cancer_type,
-      gene: example.gene,
-      variant: example.variant,
-    });
-    setError("");
-    setResult(null);
-  }
-
-  function runExample(example) {
-    const payload = {
-      case_id: example.id,
-      cancer_type: example.cancer_type,
-      gene: example.gene,
-      variant: example.variant,
-    };
-    setForm(payload);
-    submit(payload);
-  }
-
-  const visibleExamples = selectedType === "All"
-    ? EXAMPLES
-    : EXAMPLES.filter(ex => ex.type === selectedType);
-
   return (
     <div>
       <h2 style={{ color:"#028090", marginBottom:4 }}>Single Record Reconciliation</h2>
-      <p style={{ color:"#666", fontSize:13 }}>
-        Test one disease · gene · variant input and demonstrate each reconciliation pathway: exact alias, fuzzy match,
-        Cat-VRS-style ambiguity, LLM-gated review, and safe failure.
-      </p>
+      <p style={{ color:"#666", fontSize:13 }}>Reconcile a single disease · gene · variant input.</p>
 
-      <div className="workflow-strip">
-        {["Normalize", "Alias", "Fuzzy", "Ambiguity", "Evidence", "Score", "Review"].map(step => (
-          <span key={step}>{step}</span>
-        ))}
-      </div>
-
-      <div className="example-filter-row">
-        {["All", ...EXAMPLE_TYPE_ORDER].map(type => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => setSelectedType(type)}
-            className={selectedType === type ? "filter-chip active" : "filter-chip"}
-          >
-            {type}
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:12 }}>
+        {EXAMPLES.map(ex=>(
+          <button key={ex.label} onClick={()=>setForm(ex)}
+            style={{ fontSize:11, padding:"4px 10px", borderRadius:4, border:"1px solid #028090", background:"#e8f4f6", cursor:"pointer", color:"#028090" }}>
+            {ex.label}
           </button>
         ))}
       </div>
 
-      {selectedType !== "All" && (
-        <p className="helper-text" style={{ marginTop:-4 }}>
-          {EXAMPLE_TYPE_HELP[selectedType]}
-        </p>
-      )}
-
-      <div className="example-grid-wide">
-        {visibleExamples.map(ex => (
-          <ExampleCard
-            key={ex.id}
-            example={ex}
-            onLoad={loadExample}
-            onRun={runExample}
-            loading={loading}
-          />
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
+        {[["cancer_type","Disease / Cancer Type"],["gene","Gene"],["variant","Variant"]].map(([k,lbl])=>(
+          <div key={k}>
+            <label style={{ fontSize:12, color:"#555", display:"block", marginBottom:3 }}>{lbl}</label>
+            <input value={form[k]||""} onChange={e=>setForm({...form,[k]:e.target.value})}
+              style={{ width:"100%", padding:"6px 8px", borderRadius:4, border:"1px solid #ccc", fontSize:13, boxSizing:"border-box" }}/>
+          </div>
         ))}
       </div>
-
-      <div className="single-form-card">
-        <h3>Manual input</h3>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
-          {[["cancer_type","Disease / Cancer Type"],["gene","Gene"],["variant","Variant"]].map(([k,lbl])=>(
-            <div key={k}>
-              <label style={{ fontSize:12, color:"#555", display:"block", marginBottom:3 }}>{lbl}</label>
-              <input value={form[k]||""} onChange={e=>setForm({...form,[k]:e.target.value})}
-                style={{ width:"100%", padding:"6px 8px", borderRadius:4, border:"1px solid #ccc", fontSize:13, boxSizing:"border-box" }}/>
-            </div>
-          ))}
-        </div>
-        <button onClick={() => submit()} disabled={loading}
-          style={{ padding:"8px 24px", background:"#028090", color:"#fff", border:"none", borderRadius:6, fontSize:14, cursor:"pointer", opacity:loading?0.6:1 }}>
-          {loading ? "Reconciling…" : "Reconcile"}
-        </button>
-      </div>
-
+      <button onClick={submit} disabled={loading}
+        style={{ padding:"8px 24px", background:"#028090", color:"#fff", border:"none", borderRadius:6, fontSize:14, cursor:"pointer", opacity:loading?0.6:1 }}>
+        {loading ? "Reconciling…" : "Reconcile"}
+      </button>
       {error && <p style={{ color:"#cf222e", marginTop:8 }}>{error}</p>}
       <ResultCard result={result}/>
     </div>
@@ -621,8 +368,6 @@ function ReviewQueuePage() {
   const [deciding, setDeciding] = useState({});
   const [curatorId, setCuratorId] = useState("curator-1");
   const [selectedCandidateByCase, setSelectedCandidateByCase] = useState({});
-  const [reviewerNotesByCase, setReviewerNotesByCase] = useState({});
-  const [canonicalEditsByCase, setCanonicalEditsByCase] = useState({});
   const [expandedAuditByCase, setExpandedAuditByCase] = useState({});
 
   async function load() {
@@ -675,12 +420,7 @@ function ReviewQueuePage() {
       await apiFetch(`/review-queue/${caseId}/decision`, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          case_id:caseId,
-          decision,
-          curator_id:curatorId,
-          notes:reviewerNotesByCase[caseId] || null,
-        })
+        body:JSON.stringify({ case_id:caseId, decision, curator_id:curatorId })
       });
       load();
     } catch(e) { console.error(e); }
@@ -705,31 +445,7 @@ function ReviewQueuePage() {
             gene,
             variant:name || item.canonical?.variant,
           },
-          notes:reviewerNotesByCase[item.case_id] || `Edited to selected candidate: ${name || "unknown candidate"}.`
-        })
-      });
-      load();
-    } catch(e) { console.error(e); }
-    finally { setDeciding(d=>({...d,[item.case_id]:false})); }
-  }
-
-  async function editCanonical(item) {
-    const edits = canonicalEditsByCase[item.case_id] || {};
-    setDeciding(d=>({...d,[item.case_id]:true}));
-    try {
-      await apiFetch(`/review-queue/${item.case_id}/decision`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          case_id:item.case_id,
-          decision:"edit",
-          curator_id:curatorId,
-          override_canonical:{
-            cancer_type:edits.cancer_type ?? item.canonical?.cancer_type,
-            gene:edits.gene ?? item.canonical?.gene,
-            variant:edits.variant ?? item.canonical?.variant,
-          },
-          notes:reviewerNotesByCase[item.case_id] || "Canonical values edited by reviewer."
+          notes:`Edited to selected candidate: ${name || "unknown candidate"}.`
         })
       });
       load();
@@ -806,18 +522,6 @@ function ReviewQueuePage() {
       {items.map(item=>{
         const candidateIndex = Number(selectedCandidateByCase[item.case_id] ?? 0);
         const selectedCandidate = item.alternatives?.[candidateIndex] || item.alternatives?.[0];
-        const hasLiveEvidence = item.evidence?.some(e => e.retrieval_mode === "live_myvariant_api");
-        const hasCandidateEvidence = item.evidence?.some(e =>
-          ["external_candidate_evidence","local_gene_catalog_candidate"].includes(e.evidence_type)
-          || ["local_civic_candidate_csv","external_api_or_syntax_candidate","local_gene_variant_catalog_candidate"].includes(e.retrieval_mode)
-        );
-        const decisionLabel = item.decision === "approve"
-          ? "Approved"
-          : item.decision === "reject"
-            ? "Rejected"
-            : item.decision
-              ? "Edited"
-              : null;
         return (
         <div key={item.case_id} style={{ border:"2px solid #e8a020", borderRadius:8, padding:14, marginBottom:12, background:"#fffdf5" }}>
           <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:8, flexWrap:"wrap" }}>
@@ -825,15 +529,7 @@ function ReviewQueuePage() {
             <span style={{ fontWeight:"bold", fontSize:14 }}>{item.input?.gene} / {item.input?.variant}</span>
             <span style={{ fontSize:12, color:"#666" }}>{item.input?.cancer_type}</span>
             <span style={{ fontSize:12, color:"#888" }}>Score: {(item.confidence_score*100).toFixed(0)}%</span>
-            {hasCandidateEvidence && <Badge label="Candidate Evidence" color="#8250df"/>}
-            {hasLiveEvidence && <Badge label="Live API Evidence" color="#0969da"/>}
-            {!item.decision && (hasCandidateEvidence || hasLiveEvidence) && <Badge label="Needs Catalog Review" color="#9a6700"/>}
-            {decisionLabel && (
-              <Badge
-                label={decisionLabel}
-                color={item.decision==="approve" ? STATUS_COLOR.AUTO_RECONCILE : item.decision==="reject" ? STATUS_COLOR.CANNOT_RECONCILE : "#0969da"}
-              />
-            )}
+            {item.decision && <Badge label={`✓ ${item.decision}`} color={item.decision==="approve"?STATUS_COLOR.AUTO_RECONCILE:STATUS_COLOR.CANNOT_RECONCILE}/>}
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:8, fontSize:13 }}>
@@ -844,24 +540,6 @@ function ReviewQueuePage() {
               </div>
             ))}
           </div>
-
-          {!item.decision && (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))", gap:8, marginBottom:10 }}>
-              {[["cancer_type","Edit disease"],["gene","Edit gene"],["variant","Edit variant"]].map(([field,label])=>(
-                <label key={field} style={{ fontSize:11, color:"#666" }}>
-                  {label}
-                  <input
-                    value={canonicalEditsByCase[item.case_id]?.[field] ?? item.canonical?.[field] ?? ""}
-                    onChange={e=>setCanonicalEditsByCase(s=>({
-                      ...s,
-                      [item.case_id]:{...(s[item.case_id] || {}),[field]:e.target.value}
-                    }))}
-                    style={{ width:"100%", boxSizing:"border-box", marginTop:3, padding:"5px 7px", border:"1px solid #ccc", borderRadius:4, fontSize:12 }}
-                  />
-                </label>
-              ))}
-            </div>
-          )}
 
           <div style={{ background:"#f0f4f8", borderRadius:6, padding:8, fontSize:12, marginBottom:10, color:"#444" }}>
             {item.explanation}
@@ -925,7 +603,8 @@ function ReviewQueuePage() {
           </button>
           {expandedAuditByCase[item.case_id] && (
             <div style={{ border:"1px solid #d0d7de", borderRadius:6, background:"#fff", padding:10, marginBottom:10 }}>
-              <EvidenceGroups evidence={item.evidence}/>
+              <p style={{ fontSize:12, fontWeight:"bold", margin:"0 0 6px", color:"#444" }}>Governance evidence</p>
+              <EvidenceList evidence={item.evidence}/>
               <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px", color:"#444" }}>Audit trail</p>
               <ol style={{ fontSize:11, color:"#666", paddingLeft:16, margin:0 }}>
                 {item.audit_trail?.map((s,i)=><li key={i}>{s}</li>)}
@@ -940,17 +619,7 @@ function ReviewQueuePage() {
 
           {/* Decision buttons */}
           {!item.decision && (
-            <>
-            <label style={{ display:"block", fontSize:11, color:"#666", marginBottom:8 }}>
-              Reviewer note
-              <textarea
-                value={reviewerNotesByCase[item.case_id] || ""}
-                onChange={e=>setReviewerNotesByCase(s=>({...s,[item.case_id]:e.target.value}))}
-                rows={2}
-                style={{ width:"100%", boxSizing:"border-box", marginTop:3, padding:"6px 8px", border:"1px solid #ccc", borderRadius:4, fontSize:12, resize:"vertical" }}
-              />
-            </label>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:8 }}>
               <button onClick={()=>decide(item.case_id,"approve")} disabled={deciding[item.case_id]}
                 style={{ padding:"6px 20px", background:STATUS_COLOR.AUTO_RECONCILE, color:"#fff", border:"none", borderRadius:6, cursor:"pointer", fontSize:13 }}>
                 ✓ Approve
@@ -963,12 +632,7 @@ function ReviewQueuePage() {
                 style={{ padding:"6px 20px", background:"#0969da", color:"#fff", border:"none", borderRadius:6, cursor:"pointer", fontSize:13, opacity:item.alternatives?.length?1:0.5 }}>
                 Edit to Candidate
               </button>
-              <button onClick={()=>editCanonical(item)} disabled={deciding[item.case_id]}
-                style={{ padding:"6px 20px", background:"#8250df", color:"#fff", border:"none", borderRadius:6, cursor:"pointer", fontSize:13 }}>
-                Edit Canonical
-              </button>
             </div>
-            </>
           )}
           {item.decision && item.curator_id && (
             <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
@@ -1026,24 +690,6 @@ function BenchmarkPage() {
           </div>
           <div style={{ marginTop:14, background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:8, padding:12, fontSize:13 }}>
             Target accuracy: {pct(metrics.targets?.accuracy)} · Target coverage: {pct(metrics.targets?.coverage)}
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))", gap:10, marginTop:14 }}>
-            {[
-              ["Auto Reconcile",metrics.counts?.auto_reconcile],
-              ["Review Required",metrics.counts?.review_required],
-              ["Cannot Reconcile",metrics.counts?.cannot_reconcile],
-              ["Candidate Evidence",metrics.counts?.candidate_evidence_cases],
-              ["Live Lookups",metrics.counts?.live_external_lookup_attempted],
-              ["Live Evidence",metrics.counts?.live_external_evidence_found],
-              ["Approved",metrics.counts?.approved_review_cases],
-              ["Rejected",metrics.counts?.rejected_review_cases],
-              ["Edited",metrics.counts?.edited_review_cases],
-            ].map(([label,value])=>(
-              <div key={label} style={{ background:"#fff", border:"1px solid #d0d7de", borderRadius:6, padding:10 }}>
-                <div style={{ fontSize:20, fontWeight:"bold", color:"#028090" }}>{value ?? 0}</div>
-                <div style={{ fontSize:11, color:"#666" }}>{label}</div>
-              </div>
-            ))}
           </div>
           <div style={{ marginTop:14, background:"#fff", border:"1px solid #d0d7de", borderRadius:8, padding:14 }}>
             <p style={{ fontSize:13, fontWeight:"bold", color:"#444", margin:"0 0 8px" }}>How these numbers are calculated</p>

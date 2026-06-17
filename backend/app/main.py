@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import io
 import uuid
 from pathlib import Path
@@ -63,7 +64,15 @@ def queue_review_required(result) -> None:
     if result.review_status != "REVIEW_REQUIRED":
         return
 
-    case_id = result.case_id or str(uuid.uuid4())
+    if result.case_id:
+        case_id = result.case_id
+    else:
+        stable_key = "|".join(
+            str(result.input.get(field) or "").strip().lower()
+            for field in ("cancer_type", "gene", "variant")
+        )
+        digest = hashlib.sha1(stable_key.encode("utf-8")).hexdigest()[:12]
+        case_id = f"review-{digest}" if stable_key != "||" else str(uuid.uuid4())
     review_store.add_to_queue(ReviewQueueItem(
         case_id=case_id,
         input=result.input,
@@ -96,6 +105,9 @@ def benchmark_metrics() -> dict:
     resolved = 0
     review_required = 0
     cannot_reconcile = 0
+    candidate_evidence_cases = 0
+    live_external_lookup_attempted = 0
+    live_external_evidence_found = 0
     failures = []
 
     for row in cases:
@@ -104,7 +116,7 @@ def benchmark_metrics() -> dict:
             cancer_type=row.get("input_disease") or None,
             gene=row["input_gene"],
             variant=row["input_variant"],
-        ))
+        ), allow_live_lookup=False)
 
         expected_gene = None if row["expected_gene"] in {"REVIEW_REQUIRED", "CANNOT_RECONCILE"} else row["expected_gene"]
         expected_variant = None if row["expected_variant"] == "CANNOT_RECONCILE" else row["expected_variant"]
@@ -125,6 +137,20 @@ def benchmark_metrics() -> dict:
             review_required += 1
         if result.review_status == "CANNOT_RECONCILE":
             cannot_reconcile += 1
+        if any(
+            item.type in {"variant_external_candidate", "gene_catalog_candidate", "gene_external_candidate"}
+            or item.retrieval_mode in {
+                "external_api_or_syntax_candidate",
+                "local_gene_variant_catalog_candidate",
+                "external_mygene_api_candidate",
+            }
+            for item in result.evidence
+        ):
+            candidate_evidence_cases += 1
+        if any("Live MyVariant lookup started" in entry for entry in result.audit_trail):
+            live_external_lookup_attempted += 1
+        if any(item.retrieval_mode == "live_myvariant_api" for item in result.evidence):
+            live_external_evidence_found += 1
         if not (disease_ok and gene_ok and variant_ok and status_ok):
             failures.append({
                 "case_id": row["case_id"],
@@ -138,6 +164,13 @@ def benchmark_metrics() -> dict:
 
     def rate(value: int) -> float:
         return round(value / total, 4)
+
+    reviewed_items = review_store.get_queue("reviewed")
+    review_decisions = {
+        "approved": sum(item.decision == "approve" for item in reviewed_items),
+        "rejected": sum(item.decision == "reject" for item in reviewed_items),
+        "edited": sum(item.decision in {"edit", "override"} for item in reviewed_items),
+    }
 
     return {
         "benchmark_file": str(BENCHMARK_PATH.relative_to(ROOT)),
@@ -156,11 +189,19 @@ def benchmark_metrics() -> dict:
             "coverage": rate(resolved) >= 0.95,
         },
         "counts": {
+            "total_records": total,
             "full_correct": full_correct,
             "status_correct": status_correct,
+            "auto_reconcile": total - review_required - cannot_reconcile,
             "resolved": resolved,
             "review_required": review_required,
             "cannot_reconcile": cannot_reconcile,
+            "candidate_evidence_cases": candidate_evidence_cases,
+            "live_external_lookup_attempted": live_external_lookup_attempted,
+            "live_external_evidence_found": live_external_evidence_found,
+            "approved_review_cases": review_decisions["approved"],
+            "rejected_review_cases": review_decisions["rejected"],
+            "edited_review_cases": review_decisions["edited"],
         },
         "failures": failures[:20],
     }
@@ -284,3 +325,11 @@ def clear_review_queue():
     """Clear the entire review queue (admin/testing use)."""
     review_store.clear_queue()
     return {"status": "ok", "message": "Review queue cleared."}
+
+
+@app.post("/review-queue/{case_id}/promote")
+def promote_review_candidate(case_id: str):
+    """Roadmap stub. Catalog promotion remains disabled for the MVP."""
+    if not review_store.get_item(case_id):
+        raise HTTPException(status_code=404, detail=f"Case {case_id} not found in review queue.")
+    return review_store.promote_candidate_to_catalog(case_id)
