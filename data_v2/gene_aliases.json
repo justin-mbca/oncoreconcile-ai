@@ -1,0 +1,53 @@
+{
+  "EGFR": "EGFR",
+  "ERBB": "EGFR",
+  "ERBB1": "EGFR",
+  "HER1": "EGFR",
+  "epidermal growth factor receptor": "EGFR",
+
+  "ERBB2": "ERBB2",
+  "HER2": "ERBB2",
+  "HER-2": "ERBB2",
+  "HER-2/neu": "ERBB2",
+  "NEU": "ERBB2",
+  "CD340": "ERBB2",
+  "human epidermal growth factor receptor 2": "ERBB2",
+
+  "TP53": "TP53",
+  "p53": "TP53",
+  "P53": "TP53",
+
+  "KRAS": "KRAS",
+  "K-RAS": "KRAS",
+  "K-Ras": "KRAS",
+  "KRAS2": "KRAS",
+
+  "BRAF": "BRAF",
+  "B-RAF": "BRAF",
+  "BRAF1": "BRAF",
+  "Braf": "BRAF",
+
+  "MET": "MET",
+  "c-MET": "MET",
+  "c-Met": "MET",
+  "cMET": "MET",
+  "HGFR": "MET",
+  "hepatocyte growth factor receptor": "MET",
+
+  "ALK": "ALK",
+  "Anaplastic Lymphoma Kinase": "ALK",
+
+  "ROS1": "ROS1",
+  "ROS": "ROS1",
+
+  "RET": "RET",
+
+  "NTRK1": "NTRK1",
+  "NTRK2": "NTRK2",
+  "NTRK3": "NTRK3",
+
+  "TRK": "REVIEW_REQUIRED",
+  "trk": "REVIEW_REQUIRED",
+
+  "unknown_gene": "CANNOT_RECONCILE"
+}

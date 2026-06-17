@@ -1,0 +1,16 @@
+{
+  "HER2": "ERBB2",
+  "HER-2": "ERBB2",
+  "ERBB2": "ERBB2",
+  "p53": "TP53",
+  "TP53": "TP53",
+  "EGFR": "EGFR",
+  "KRAS": "KRAS",
+  "ALK": "ALK",
+  "MET": "MET",
+  "ROS1": "ROS1",
+  "RET": "RET",
+  "NTRK": "NTRK",
+  "BRAF": "BRAF",
+  "PIK3CA": "PIK3CA"
+}

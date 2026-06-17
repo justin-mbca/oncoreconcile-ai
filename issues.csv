@@ -1,0 +1,4 @@
+title,body,labels,assignees,milestone
+[Task] Expand benchmark tests,Add deterministic tests to cover easy+medium benchmark cases,task;backend,nikola,Checkpoint 1
+[Task] Render evidence in frontend,Show evidence source/type/description in results panel,task;frontend,anne,Checkpoint 1
+[Task] Add CI hardening,Ensure backend pytest runs on PR and push,task;platform,eric,Checkpoint 1

@@ -1,0 +1,14 @@
+case_id,workflow_step,cancer_type,gene,variant,expected_status
+workflow_001,Disease alias + variant alias,NSCLC,EGFR,Ex19del,AUTO_RECONCILE
+workflow_002,Gene alias normalization,NSCLC,HER1,L858R,AUTO_RECONCILE
+workflow_003,Gene + copy number synonym,NSCLC,HER2,amp,AUTO_RECONCILE
+workflow_004,Catalog match,Melanoma,BRAF,V600E,AUTO_RECONCILE
+workflow_005,Disease fuzzy matching,melanomaa,BRAF,V600E,AUTO_RECONCILE
+workflow_006,Gene fuzzy matching,NSCLC,ERRB2,amp,AUTO_RECONCILE
+workflow_007,Variant fuzzy matching,NSCLC,EGFR,Ex19dele,AUTO_RECONCILE
+workflow_008,Cat-VRS categorical ambiguity,NSCLC,TRK,fusion,REVIEW_REQUIRED
+workflow_009,Variant ambiguity candidates,Melanoma,BRAF,V600,REVIEW_REQUIRED
+workflow_010,Catalog review required,NSCLC,EGFR,Exon20ins,REVIEW_REQUIRED
+workflow_011,LLM-gated review suggestion,NSCLC,KRAS,mutation,REVIEW_REQUIRED
+workflow_012,Cannot reconcile safe failure,NSCLC,unknown_gene,G12C,CANNOT_RECONCILE
+workflow_013,Cross-disease HER2 alias,Breast Cancer,HER2,HER2+,AUTO_RECONCILE

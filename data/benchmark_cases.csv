@@ -1,0 +1,157 @@
+case_id,input_disease,input_gene,input_variant,expected_disease,expected_gene,expected_variant,expected_status,category,source,notes
+case_001,NSCLC,EGFR,Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_002,NSCLC,EGFR,del19,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_003,NSCLC,EGFR,EGFR Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_004,NSCLC,ERBB,Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_005,NSCLC,ERBB,del19,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_006,NSCLC,ERBB,EGFR Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_007,NSCLC,ERBB1,Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_008,NSCLC,ERBB1,del19,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_009,NSCLC,ERBB1,EGFR Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,AUTO,manual_curated,Common NSCLC EGFR alteration.
+case_010,NSCLC,EGFR,L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_011,NSCLC,EGFR,EGFR L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_012,NSCLC,ERBB,L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_013,NSCLC,ERBB,EGFR L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_014,NSCLC,ERBB1,L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_015,NSCLC,ERBB1,EGFR L858R,Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR activating mutation.
+case_016,NSCLC,EGFR,T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_017,NSCLC,EGFR,EGFR T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_018,NSCLC,ERBB,T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_019,NSCLC,ERBB,EGFR T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_020,NSCLC,ERBB1,T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_021,NSCLC,ERBB1,EGFR T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,AUTO,manual_curated,Common EGFR resistance mutation.
+case_022,NSCLC,EGFR,Exon20ins,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,EGFR Exon 20 Insertion,REVIEW_REQUIRED,REVIEW,manual_curated,EGFR exon 20 insertion wording may require more specific review.
+case_023,NSCLC,EGFR,EGFR exon 20 insertion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,EGFR Exon 20 Insertion,REVIEW_REQUIRED,REVIEW,manual_curated,EGFR exon 20 insertion wording may require more specific review.
+case_024,NSCLC,'C-K-RAS,G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_025,NSCLC,'C-K-RAS,KRAS G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_026,NSCLC,C-K-RAS,G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_027,NSCLC,C-K-RAS,KRAS G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_028,NSCLC,CFC2,G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_029,NSCLC,CFC2,KRAS G12C,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS alteration.
+case_030,NSCLC,'C-K-RAS,G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_031,NSCLC,'C-K-RAS,KRAS G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_032,NSCLC,C-K-RAS,G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_033,NSCLC,C-K-RAS,KRAS G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_034,NSCLC,CFC2,G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_035,NSCLC,CFC2,KRAS G12D,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_036,NSCLC,'C-K-RAS,G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_037,NSCLC,'C-K-RAS,KRAS G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_038,NSCLC,C-K-RAS,G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_039,NSCLC,C-K-RAS,KRAS G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_040,NSCLC,CFC2,G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_041,NSCLC,CFC2,KRAS G12V,Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,AUTO_RECONCILE,AUTO,manual_curated,Common KRAS codon 12 alteration.
+case_042,NSCLC,KRAS,KRAS mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,KRAS Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic KRAS mutation needs specific alteration.
+case_043,NSCLC,KRAS,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,KRAS Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic KRAS mutation needs specific alteration.
+case_044,NSCLC,94 kDa B-raf protein,V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_045,NSCLC,94 kDa B-raf protein,BRAF V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_046,NSCLC,B-RAF,V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_047,NSCLC,B-RAF,BRAF V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_048,NSCLC,B-RAF1,V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_049,NSCLC,B-RAF1,BRAF V600E,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,AUTO_RECONCILE,AUTO,manual_curated,Canonical BRAF alteration.
+case_050,NSCLC,94 kDa B-raf protein,V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_051,NSCLC,94 kDa B-raf protein,BRAF V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_052,NSCLC,B-RAF,V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_053,NSCLC,B-RAF,BRAF V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_054,NSCLC,B-RAF1,V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_055,NSCLC,B-RAF1,BRAF V600K,Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,AUTO_RECONCILE,AUTO,manual_curated,BRAF V600 alteration.
+case_056,NSCLC,BRAF,BRAF mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,BRAF Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic BRAF mutation needs specific alteration.
+case_057,NSCLC,BRAF,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,BRAF Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic BRAF mutation needs specific alteration.
+case_058,NSCLC,CD340,HER2 amp,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_059,NSCLC,CD340,HER2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_060,NSCLC,CD340,ERBB2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_061,NSCLC,ERBB2,HER2 amp,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_062,NSCLC,ERBB2,HER2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_063,NSCLC,ERBB2,ERBB2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_064,NSCLC,HER-2,HER2 amp,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_065,NSCLC,HER-2,HER2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_066,NSCLC,HER-2,ERBB2 amplification,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,AUTO,manual_curated,HER2/ERBB2 amplification example.
+case_067,NSCLC,CD340,HER2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_068,NSCLC,CD340,ERBB2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_069,NSCLC,CD340,copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_070,NSCLC,ERBB2,HER2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_071,NSCLC,ERBB2,ERBB2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_072,NSCLC,ERBB2,copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_073,NSCLC,HER-2,HER2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_074,NSCLC,HER-2,ERBB2 copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_075,NSCLC,HER-2,copy gain,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,AUTO_RECONCILE,AUTO,manual_curated,ERBB2 copy-number wording.
+case_076,NSCLC,ERBB2,HER2 mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,ERBB2 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic ERBB2 mutation requires specific variant detail.
+case_077,NSCLC,ERBB2,ERBB2 mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,ERBB2 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic ERBB2 mutation requires specific variant detail.
+case_078,NSCLC,ERBB2,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,ERBB2 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic ERBB2 mutation requires specific variant detail.
+case_079,NSCLC,AUTS9,METex14,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_080,NSCLC,AUTS9,MET exon14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_081,NSCLC,AUTS9,MET exon 14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_082,NSCLC,DA11,METex14,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_083,NSCLC,DA11,MET exon14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_084,NSCLC,DA11,MET exon 14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_085,NSCLC,DFNB97,METex14,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_086,NSCLC,DFNB97,MET exon14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_087,NSCLC,DFNB97,MET exon 14 skipping,Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,AUTO_RECONCILE,AUTO,manual_curated,Important MET alteration in NSCLC.
+case_088,NSCLC,AUTS9,MET amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_089,NSCLC,AUTS9,MET amplification,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_090,NSCLC,AUTS9,amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_091,NSCLC,DA11,MET amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_092,NSCLC,DA11,MET amplification,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_093,NSCLC,DA11,amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_094,NSCLC,DFNB97,MET amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_095,NSCLC,DFNB97,MET amplification,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_096,NSCLC,DFNB97,amp,Lung Non-Small Cell Carcinoma,MET,MET Amplification,AUTO_RECONCILE,AUTO,manual_curated,MET copy-number alteration.
+case_097,NSCLC,MET,MET mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,MET Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic MET mutation needs specific alteration.
+case_098,NSCLC,MET,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,MET Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic MET mutation needs specific alteration.
+case_099,NSCLC,ALK,ALK fusion,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_100,NSCLC,ALK,ALK rearrangement,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_101,NSCLC,ALK,ALK translocation,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_102,NSCLC,ALK tyrosine kinase receptor,ALK fusion,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_103,NSCLC,ALK tyrosine kinase receptor,ALK rearrangement,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_104,NSCLC,ALK tyrosine kinase receptor,ALK translocation,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_105,NSCLC,ALK1,ALK fusion,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_106,NSCLC,ALK1,ALK rearrangement,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_107,NSCLC,ALK1,ALK translocation,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,AUTO,manual_curated,ALK fusion/rearrangement.
+case_108,NSCLC,MCF3,ROS1 fusion,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_109,NSCLC,MCF3,ROS1 rearrangement,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_110,NSCLC,MCF3,ROS1 translocation,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_111,NSCLC,ROS,ROS1 fusion,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_112,NSCLC,ROS,ROS1 rearrangement,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_113,NSCLC,ROS,ROS1 translocation,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_114,NSCLC,ROS1,ROS1 fusion,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_115,NSCLC,ROS1,ROS1 rearrangement,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_116,NSCLC,ROS1,ROS1 translocation,Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,ROS1 fusion/rearrangement.
+case_117,NSCLC,CDHF12,RET fusion,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_118,NSCLC,CDHF12,RET rearrangement,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_119,NSCLC,CDHF12,RET translocation,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_120,NSCLC,CDHR16,RET fusion,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_121,NSCLC,CDHR16,RET rearrangement,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_122,NSCLC,CDHR16,RET translocation,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_123,NSCLC,HSCR1,RET fusion,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_124,NSCLC,HSCR1,RET rearrangement,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_125,NSCLC,HSCR1,RET translocation,Lung Non-Small Cell Carcinoma,RET,RET Fusion,AUTO_RECONCILE,AUTO,manual_curated,RET fusion/rearrangement.
+case_126,NSCLC,MTC,NTRK1 fusion,Lung Non-Small Cell Carcinoma,NTRK1,NTRK1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK1 fusion.
+case_127,NSCLC,NTRK1,NTRK1 fusion,Lung Non-Small Cell Carcinoma,NTRK1,NTRK1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK1 fusion.
+case_128,NSCLC,Oncogene TRK,NTRK1 fusion,Lung Non-Small Cell Carcinoma,NTRK1,NTRK1 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK1 fusion.
+case_129,NSCLC,BDNF-tropomyosine receptor kinase B,NTRK2 fusion,Lung Non-Small Cell Carcinoma,NTRK2,NTRK2 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK2 fusion.
+case_130,NSCLC,BDNF/NT-3 growth factors receptor,NTRK2 fusion,Lung Non-Small Cell Carcinoma,NTRK2,NTRK2 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK2 fusion.
+case_131,NSCLC,DEE58,NTRK2 fusion,Lung Non-Small Cell Carcinoma,NTRK2,NTRK2 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK2 fusion.
+case_132,NSCLC,ETV6-NTRK3 fusion,NTRK3 fusion,Lung Non-Small Cell Carcinoma,NTRK3,NTRK3 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK3 fusion.
+case_133,NSCLC,GP145-TrkC,NTRK3 fusion,Lung Non-Small Cell Carcinoma,NTRK3,NTRK3 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK3 fusion.
+case_134,NSCLC,NT-3 growth factor receptor,NTRK3 fusion,Lung Non-Small Cell Carcinoma,NTRK3,NTRK3 Fusion,AUTO_RECONCILE,AUTO,manual_curated,Specific NTRK3 fusion.
+case_135,NSCLC,BCC7,R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_136,NSCLC,BCC7,TP53 R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_137,NSCLC,BMFS5,R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_138,NSCLC,BMFS5,TP53 R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_139,NSCLC,LFS1,R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_140,NSCLC,LFS1,TP53 R175H,Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,AUTO_RECONCILE,AUTO,manual_curated,Useful p53/TP53 benchmark example.
+case_141,NSCLC,TP53,p53 mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,TP53 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic TP53 mutation requires specific variant detail.
+case_142,NSCLC,TP53,TP53 mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,TP53 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic TP53 mutation requires specific variant detail.
+case_143,NSCLC,TP53,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,TP53 Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic TP53 mutation requires specific variant detail.
+case_144,NSCLC,TRK,TRK fusion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),REVIEW_REQUIRED,REVIEW,manual_curated,"Generic TRK/NTRK wording may refer to NTRK1, NTRK2, or NTRK3."
+case_145,NSCLC,TRK,pan-TRK fusion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),REVIEW_REQUIRED,REVIEW,manual_curated,"Generic TRK/NTRK wording may refer to NTRK1, NTRK2, or NTRK3."
+case_146,NSCLC,TRK,pan-trk fusion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),REVIEW_REQUIRED,REVIEW,manual_curated,"Generic TRK/NTRK wording may refer to NTRK1, NTRK2, or NTRK3."
+case_147,NSCLC,REVIEW_REQUIRED,positive,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Positive,REVIEW_REQUIRED,REVIEW,manual_curated,Positive alone lacks enough variant detail.
+case_148,NSCLC,REVIEW_REQUIRED,abnormal,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Positive,REVIEW_REQUIRED,REVIEW,manual_curated,Positive alone lacks enough variant detail.
+case_149,NSCLC,REVIEW_REQUIRED,detected,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Positive,REVIEW_REQUIRED,REVIEW,manual_curated,Positive alone lacks enough variant detail.
+case_150,NSCLC,REVIEW_REQUIRED,mutation,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic mutation wording requires a specific gene and alteration.
+case_151,NSCLC,REVIEW_REQUIRED,mutated,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic mutation wording requires a specific gene and alteration.
+case_152,NSCLC,REVIEW_REQUIRED,alteration,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Mutation,REVIEW_REQUIRED,REVIEW,manual_curated,Generic mutation wording requires a specific gene and alteration.
+case_153,NSCLC,unknown_gene,unknown_variant,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Explicit cannot-reconcile benchmark support.
+case_154,NSCLC,unknown_gene,unknown alteration,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Explicit cannot-reconcile benchmark support.
+case_155,NSCLC,unknown_gene,XYZ999,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Synthetic invalid examples for safe failure testing.
+case_156,NSCLC,unknown_gene,ABC123,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT,manual_curated,Synthetic invalid examples for safe failure testing.

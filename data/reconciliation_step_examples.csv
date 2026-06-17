@@ -1,0 +1,19 @@
+case_id,cancer_type,gene,variant,step_demonstrated,expected_status
+step_001,NSCLC,HER2,amp,Exact disease alias plus gene alias plus catalog variant plus external evidence,AUTO_RECONCILE
+step_002,Breast Cancer,HER2,HER2+,Disease alias normalization to Breast Invasive Carcinoma,AUTO_RECONCILE
+step_003,NSCLC,CD340,HER2 amp,Gene alias normalization from CD340 to ERBB2,AUTO_RECONCILE
+step_004,NSCLC,EGFR,Ex19del,Variant catalog normalization plus ClinVar CIViC OncoKB evidence,AUTO_RECONCILE
+step_005,NSCLC,TRK,pan-trk fusion,Ambiguous gene routes to REVIEW_REQUIRED and evaluates LLM suggestion hook,REVIEW_REQUIRED
+step_006,NSCLC,EGFR,Exon20ins,Catalog variant explicitly marked REVIEW_REQUIRED,REVIEW_REQUIRED
+step_007,NSCLC,unknown_gene,G12C,Unknown gene safely routes to CANNOT_RECONCILE,CANNOT_RECONCILE
+step_008,Melanoma,BRAF,V600E,Cancer-specific catalog variant with external evidence,AUTO_RECONCILE
+step_009,NSCLC,KRAS,mutation,Generic mutation is recognized but requires specific alteration review,REVIEW_REQUIRED
+step_010,NSCLC,FAKE_GENE_XYZ,FAKE_VARIANT_XYZ,No trusted gene or variant match routes to CANNOT_RECONCILE,CANNOT_RECONCILE
+fuzzy_001,non-small cell lung carcinom,EGFR,Ex19del,Fuzzy disease matching after rapidfuzz is installed,AUTO_RECONCILE
+fuzzy_002,NSCLC,ERBB-2,amp,Fuzzy gene matching after rapidfuzz is installed,AUTO_RECONCILE
+fuzzy_003,NSCLC,EGFR,Exon 19 deletin,Fuzzy variant matching after rapidfuzz is installed,AUTO_RECONCILE
+llm_001,NSCLC,TRK,fusion,LLM suggestion hook for ambiguous TRK fusion REVIEW_REQUIRED case,REVIEW_REQUIRED
+llm_002,NSCLC,NTRK,fusion,LLM suggestion hook for ambiguous NTRK fusion REVIEW_REQUIRED case,REVIEW_REQUIRED
+llm_003,NSCLC,EGFR,Exon20ins,LLM suggestion hook for catalog variant marked REVIEW_REQUIRED,REVIEW_REQUIRED
+llm_004,NSCLC,KRAS,mutation,LLM suggestion hook for generic mutation requiring specific alteration review,REVIEW_REQUIRED
+llm_005,Melanoma,BRAF,V600,LLM suggestion hook for nonspecific BRAF V600 alteration review,REVIEW_REQUIRED

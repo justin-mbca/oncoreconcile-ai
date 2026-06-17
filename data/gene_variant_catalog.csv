@@ -1,0 +1,77 @@
+disease_scope,gene,variant,variant_aliases,alteration_type,source,mvp_status,notes
+Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,Ex19del; del19; EGFR Ex19del; EGFR exon 19 deletion; exon19del,Deletion,manual_curated,AUTO_RECONCILE,Common NSCLC EGFR alteration.
+Lung Non-Small Cell Carcinoma,EGFR,EGFR L858R,L858R; EGFR L858R,SNV,manual_curated,AUTO_RECONCILE,Common EGFR activating mutation.
+Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,T790M; EGFR T790M,SNV,manual_curated,AUTO_RECONCILE,Common EGFR resistance mutation.
+Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 20 Insertion,Exon20ins; EGFR exon 20 insertion,Insertion,manual_curated,REVIEW_REQUIRED,EGFR exon 20 insertion wording may require more specific review.
+Lung Non-Small Cell Carcinoma,KRAS,KRAS G12C,G12C; KRAS G12C,SNV,manual_curated,AUTO_RECONCILE,Common KRAS alteration.
+Lung Non-Small Cell Carcinoma,KRAS,KRAS G12D,G12D; KRAS G12D,SNV,manual_curated,AUTO_RECONCILE,Common KRAS codon 12 alteration.
+Lung Non-Small Cell Carcinoma,KRAS,KRAS G12V,G12V; KRAS G12V,SNV,manual_curated,AUTO_RECONCILE,Common KRAS codon 12 alteration.
+Lung Non-Small Cell Carcinoma,KRAS,KRAS Mutation,KRAS mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic KRAS mutation needs specific alteration.
+Lung Non-Small Cell Carcinoma,BRAF,BRAF V600E,V600E; BRAF V600E,SNV,manual_curated,AUTO_RECONCILE,Canonical BRAF alteration.
+Lung Non-Small Cell Carcinoma,BRAF,BRAF V600K,V600K; BRAF V600K,SNV,manual_curated,AUTO_RECONCILE,BRAF V600 alteration.
+Lung Non-Small Cell Carcinoma,BRAF,BRAF Mutation,BRAF mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic BRAF mutation needs specific alteration.
+Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,HER2 amp; HER2 amplification; ERBB2 amplification; amp; amplification; gene amplification,Copy Number,manual_curated,AUTO_RECONCILE,HER2/ERBB2 amplification example.
+Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Copy Number Gain,HER2 copy gain; ERBB2 copy gain; copy gain; copy number gain,Copy Number,manual_curated,AUTO_RECONCILE,ERBB2 copy-number wording.
+Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Mutation,HER2 mutation; ERBB2 mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic ERBB2 mutation requires specific variant detail.
+Lung Non-Small Cell Carcinoma,MET,MET Exon 14 Skipping,METex14; MET exon14 skipping; MET exon 14 skipping; Exon 14 Skipping,Splice / Exon Skipping,manual_curated,AUTO_RECONCILE,Important MET alteration in NSCLC.
+Lung Non-Small Cell Carcinoma,MET,MET Amplification,MET amp; MET amplification; amp; amplification,Copy Number,manual_curated,AUTO_RECONCILE,MET copy-number alteration.
+Lung Non-Small Cell Carcinoma,MET,MET Mutation,MET mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic MET mutation needs specific alteration.
+Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,ALK fusion; ALK rearrangement; ALK translocation; fusion; rearrangement,Fusion,manual_curated,AUTO_RECONCILE,ALK fusion/rearrangement.
+Lung Non-Small Cell Carcinoma,ROS1,ROS1 Fusion,ROS1 fusion; ROS1 rearrangement; ROS1 translocation; fusion; rearrangement; translocation,Fusion,manual_curated,AUTO_RECONCILE,ROS1 fusion/rearrangement.
+Lung Non-Small Cell Carcinoma,RET,RET Fusion,RET fusion; RET rearrangement; RET translocation; fusion; rearrangement; translocation,Fusion,manual_curated,AUTO_RECONCILE,RET fusion/rearrangement.
+Lung Non-Small Cell Carcinoma,NTRK1,NTRK1 Fusion,NTRK1 fusion,Fusion,manual_curated,AUTO_RECONCILE,Specific NTRK1 fusion.
+Lung Non-Small Cell Carcinoma,NTRK2,NTRK2 Fusion,NTRK2 fusion,Fusion,manual_curated,AUTO_RECONCILE,Specific NTRK2 fusion.
+Lung Non-Small Cell Carcinoma,NTRK3,NTRK3 Fusion,NTRK3 fusion,Fusion,manual_curated,AUTO_RECONCILE,Specific NTRK3 fusion.
+Lung Non-Small Cell Carcinoma,TP53,TP53 R175H,R175H; TP53 R175H,SNV,manual_curated,AUTO_RECONCILE,Useful p53/TP53 benchmark example.
+Lung Non-Small Cell Carcinoma,TP53,TP53 Mutation,p53 mutation; TP53 mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic TP53 mutation requires specific variant detail.
+Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),TRK fusion; pan-TRK fusion; pan-trk fusion; NTRK fusion,Fusion,manual_curated,REVIEW_REQUIRED,"Generic TRK/NTRK wording may refer to NTRK1, NTRK2, or NTRK3."
+Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Positive,positive; abnormal; detected,Unknown,manual_curated,REVIEW_REQUIRED,Positive alone lacks enough variant detail.
+Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Generic Mutation,mutation; mutated; alteration,Unknown,manual_curated,REVIEW_REQUIRED,Generic mutation wording requires a specific gene and alteration.
+Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,unknown_variant,unknown_variant; unknown alteration,Unknown,manual_curated,CANNOT_RECONCILE,Explicit cannot-reconcile benchmark support.
+Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,invalid_variant,XYZ999; ABC123,Unknown,manual_curated,CANNOT_RECONCILE,Synthetic invalid examples for safe failure testing.
+Breast Invasive Carcinoma,ERBB2,ERBB2 Amplification,HER2 amp; HER2 amplification; ERBB2 amplification; HER2+; her2 positive,Copy Number,manual_curated,AUTO_RECONCILE,HER2 amplification in breast cancer.
+Breast Invasive Carcinoma,ERBB2,ERBB2 Mutation,HER2 mutation; ERBB2 mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic HER2 mutation needs specific detail.
+Breast Invasive Carcinoma,PIK3CA,PIK3CA E545K,E545K; PIK3CA E545K,SNV,manual_curated,AUTO_RECONCILE,Hotspot PIK3CA mutation in breast cancer.
+Breast Invasive Carcinoma,PIK3CA,PIK3CA H1047R,H1047R; PIK3CA H1047R,SNV,manual_curated,AUTO_RECONCILE,Hotspot PIK3CA mutation in breast cancer.
+Breast Invasive Carcinoma,PIK3CA,PIK3CA E542K,E542K; PIK3CA E542K,SNV,manual_curated,AUTO_RECONCILE,Hotspot PIK3CA mutation.
+Breast Invasive Carcinoma,PIK3CA,PIK3CA Mutation,PIK3CA mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic PIK3CA mutation needs specific variant.
+Breast Invasive Carcinoma,BRCA1,BRCA1 Mutation,BRCA1 mutation; BRCA mutation; BRCA1 pathogenic,Mutation,manual_curated,REVIEW_REQUIRED,BRCA1 mutation requires specific variant.
+Breast Invasive Carcinoma,BRCA2,BRCA2 Mutation,BRCA2 mutation; BRCA mutation; BRCA2 pathogenic,Mutation,manual_curated,REVIEW_REQUIRED,BRCA2 mutation requires specific variant.
+Breast Invasive Carcinoma,ESR1,ESR1 Mutation,ESR1 mutation; ER mutation,Mutation,manual_curated,REVIEW_REQUIRED,ESR1 mutation in ER+ breast cancer.
+Breast Invasive Carcinoma,PTEN,PTEN Loss,PTEN loss; PTEN deletion; PTEN inactivation,Copy Number,manual_curated,AUTO_RECONCILE,PTEN loss in breast cancer.
+Colorectal Adenocarcinoma,KRAS,KRAS G12C,G12C; KRAS G12C,SNV,manual_curated,AUTO_RECONCILE,KRAS G12C in colorectal cancer.
+Colorectal Adenocarcinoma,KRAS,KRAS G12D,G12D; KRAS G12D,SNV,manual_curated,AUTO_RECONCILE,KRAS G12D in colorectal cancer.
+Colorectal Adenocarcinoma,KRAS,KRAS G12V,G12V; KRAS G12V,SNV,manual_curated,AUTO_RECONCILE,KRAS G12V in colorectal cancer.
+Colorectal Adenocarcinoma,KRAS,KRAS Mutation,KRAS mutation; RAS mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic KRAS mutation needs specific variant.
+Colorectal Adenocarcinoma,NRAS,NRAS Q61K,Q61K; NRAS Q61K,SNV,manual_curated,AUTO_RECONCILE,NRAS Q61K in colorectal cancer.
+Colorectal Adenocarcinoma,NRAS,NRAS Mutation,NRAS mutation; RAS mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic NRAS mutation needs specific variant.
+Colorectal Adenocarcinoma,BRAF,BRAF V600E,V600E; BRAF V600E,SNV,manual_curated,AUTO_RECONCILE,BRAF V600E in colorectal cancer.
+Colorectal Adenocarcinoma,MSI,MSI-H,MSI-H; MSI high; microsatellite instability high; MMR deficient; dMMR,Biomarker,manual_curated,AUTO_RECONCILE,MSI-High status in colorectal cancer.
+Colorectal Adenocarcinoma,ERBB2,ERBB2 Amplification,HER2 amp; HER2 amplification; ERBB2 amplification,Copy Number,manual_curated,AUTO_RECONCILE,HER2 amplification in colorectal cancer.
+Melanoma,BRAF,BRAF V600E,V600E; BRAF V600E,SNV,manual_curated,AUTO_RECONCILE,Canonical BRAF V600E in melanoma.
+Melanoma,BRAF,BRAF V600K,V600K; BRAF V600K,SNV,manual_curated,AUTO_RECONCILE,BRAF V600K in melanoma.
+Melanoma,BRAF,BRAF V600 Mutation,V600; BRAF V600; BRAF V600 mutation,SNV,manual_curated,REVIEW_REQUIRED,BRAF V600 without specific amino acid change.
+Melanoma,NRAS,NRAS Q61R,Q61R; NRAS Q61R,SNV,manual_curated,AUTO_RECONCILE,NRAS Q61R in melanoma.
+Melanoma,NRAS,NRAS Q61K,Q61K; NRAS Q61K,SNV,manual_curated,AUTO_RECONCILE,NRAS Q61K in melanoma.
+Melanoma,NRAS,NRAS Mutation,NRAS mutation; mutation,Mutation,manual_curated,REVIEW_REQUIRED,Generic NRAS mutation needs specific variant.
+Melanoma,KIT,KIT Mutation,c-KIT mutation; KIT mutation; KIT alteration,Mutation,manual_curated,REVIEW_REQUIRED,KIT mutation in melanoma.
+Melanoma,NF1,NF1 Mutation,NF1 mutation; neurofibromatosis mutation,Mutation,manual_curated,REVIEW_REQUIRED,NF1 loss-of-function in melanoma.
+Acute Myeloid Leukemia,FLT3,FLT3 ITD,FLT3-ITD; FLT3 internal tandem duplication; ITD,Insertion,manual_curated,AUTO_RECONCILE,FLT3-ITD in AML.
+Acute Myeloid Leukemia,FLT3,FLT3 TKD,FLT3-TKD; FLT3 D835; FLT3 TKD D835,SNV,manual_curated,AUTO_RECONCILE,FLT3 tyrosine kinase domain mutation in AML.
+Acute Myeloid Leukemia,IDH1,IDH1 R132H,R132H; IDH1 R132H,SNV,manual_curated,AUTO_RECONCILE,IDH1 R132H in AML.
+Acute Myeloid Leukemia,IDH2,IDH2 R140Q,R140Q; IDH2 R140Q,SNV,manual_curated,AUTO_RECONCILE,IDH2 R140Q in AML.
+Acute Myeloid Leukemia,NPM1,NPM1 Mutation,NPM1 mutation; NPM1 type A,Mutation,manual_curated,AUTO_RECONCILE,NPM1 mutation in AML.
+Acute Myeloid Leukemia,TP53,TP53 Mutation,p53 mutation; TP53 mutation,Mutation,manual_curated,REVIEW_REQUIRED,TP53 mutation in AML requires specific variant.
+Chronic Myelogenous Leukemia,BCR-ABL1,BCR-ABL1 Fusion,BCR-ABL; BCR-ABL1; t(9;22); Philadelphia chromosome; Ph+,Fusion,manual_curated,AUTO_RECONCILE,BCR-ABL1 fusion defining CML.
+Glioblastoma Multiforme,EGFR,EGFR Amplification,EGFR amp; EGFR amplification,Copy Number,manual_curated,AUTO_RECONCILE,EGFR amplification in GBM.
+Glioblastoma Multiforme,IDH1,IDH1 R132H,R132H; IDH1 R132H,SNV,manual_curated,AUTO_RECONCILE,IDH1 R132H in glioma/GBM.
+Glioblastoma Multiforme,PTEN,PTEN Loss,PTEN loss; PTEN deletion,Copy Number,manual_curated,AUTO_RECONCILE,PTEN loss in GBM.
+Pancreatic Adenocarcinoma,KRAS,KRAS G12D,G12D; KRAS G12D,SNV,manual_curated,AUTO_RECONCILE,KRAS G12D in pancreatic cancer.
+Pancreatic Adenocarcinoma,KRAS,KRAS G12V,G12V; KRAS G12V,SNV,manual_curated,AUTO_RECONCILE,KRAS G12V in pancreatic cancer.
+Pancreatic Adenocarcinoma,BRCA2,BRCA2 Mutation,BRCA2 mutation,Mutation,manual_curated,REVIEW_REQUIRED,BRCA2 mutation in pancreatic cancer.
+Pancreatic Adenocarcinoma,SMAD4,SMAD4 Loss,SMAD4 deletion; SMAD4 loss,Copy Number,manual_curated,AUTO_RECONCILE,SMAD4 loss in pancreatic cancer.
+Prostate Adenocarcinoma,BRCA2,BRCA2 Mutation,BRCA2 mutation; BRCA2 pathogenic,Mutation,manual_curated,REVIEW_REQUIRED,BRCA2 mutation in prostate cancer.
+Prostate Adenocarcinoma,AR,AR Amplification,AR amp; androgen receptor amplification,Copy Number,manual_curated,AUTO_RECONCILE,Androgen receptor amplification in prostate cancer.
+Prostate Adenocarcinoma,PTEN,PTEN Loss,PTEN loss; PTEN deletion,Copy Number,manual_curated,AUTO_RECONCILE,PTEN loss in prostate cancer.
+Papillary Thyroid Cancer,BRAF,BRAF V600E,V600E; BRAF V600E,SNV,manual_curated,AUTO_RECONCILE,BRAF V600E in papillary thyroid cancer.
+Papillary Thyroid Cancer,RET,RET Fusion,RET fusion; RET rearrangement,Fusion,manual_curated,AUTO_RECONCILE,RET fusion in thyroid cancer.

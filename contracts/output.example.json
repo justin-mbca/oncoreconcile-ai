@@ -1,0 +1,24 @@
+{
+  "case_id": "case_001",
+  "input": {
+    "cancer_type": "NSCLC",
+    "gene": "HER2",
+    "variant": "Amplification"
+  },
+  "canonical": {
+    "cancer_type": "Non-Small Cell Lung Cancer",
+    "gene": "ERBB2",
+    "variant": "ERBB2 Amplification"
+  },
+  "evidence": [
+    {
+      "source": "HGNC",
+      "type": "gene_alias",
+      "description": "HER2 is a recognized alias of ERBB2."
+    }
+  ],
+  "explanation": "HER2 was reconciled to ERBB2 because HER2 is a recognized alias. Amplification was mapped to ERBB2 Amplification using gene context.",
+  "confidence": "HIGH",
+  "review_status": "AUTO_RECONCILE",
+  "notes": []
+}
