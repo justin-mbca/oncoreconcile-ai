@@ -1,8 +1,8 @@
 # OncoReconcile AI
 
-## Human-Governed Oncology Entity Reconciliation Platform
+## Human-Governed AI-Assisted Curation and Harmonization Platform for Oncology
 
-OncoReconcile AI is a human-governed oncology entity reconciliation platform that transforms heterogeneous cancer types, genes, and variants into trusted canonical oncology concepts through explainable reconciliation, evidence discovery, adaptive external knowledge retrieval, confidence scoring, provenance tracking, and expert review workflows.
+OncoReconcile AI transforms heterogeneous cancer types, genes, and variants into canonical oncology candidates through AI-assisted evidence discovery, explainable reconciliation, confidence scoring, provenance tracking, standards-ready exports, and expert review workflows.
 
 This project is being developed for the **DFWIT AI & Startup Competition 2026** by **Team Variant Vanguard**.
 
@@ -383,12 +383,50 @@ The platform prioritizes transparency over automation.
 
 ---
 
+## GA4GH AI Work Stream Alignment
+
+OncoReconcile AI aligns most closely with the GA4GH AI Work Stream directions
+of AI-Assisted Curation and AI Governance & Trust.
+
+The MVP demonstrates:
+
+* Variant harmonization
+* Disease, gene, and variant curation
+* Candidate and live evidence aggregation
+* PROV-O-inspired provenance tracking
+* Human-governed review
+* Benchmark-driven validation
+* VRS-ready, Cat-VRS-ready, and VA-Spec-ready prototype exports
+
+The project is standards-inspired and does not claim official GA4GH, VRS,
+Cat-VRS, VA-Spec, or PROV-O compliance.
+
+### Near-Term Standards Roadmap
+
+* Expand provenance-chain visualization
+* Add a knowledge graph export prototype
+* Add versioned curator-controlled catalog promotion
+
+### Future Standards Roadmap
+
+* Official GA4GH VRS object generation
+* Cat-VRS serialization
+* VA-Spec-compatible export
+* Biolink and SSSOM mappings
+* FHIR Genomics export
+* OMOP Oncology export
+
+The current standards-ready exports are demonstration adapters, not official
+standards objects.
+
+---
+
 ## Verification Status
 
 Current automated verification results:
 
 ```text
-26 tests passed
+35 tests passed
 161 benchmark cases
 Frontend production build successful
 Backend API verified

@@ -106,9 +106,32 @@ function EvidenceGroups({ evidence }) {
 
 function ResultCard({ result }) {
   const [expanded, setExpanded] = useState(false);
+  const [standardsExport, setStandardsExport] = useState(null);
+  const [standardsExportLabel, setStandardsExportLabel] = useState("");
+  const [standardsLoading, setStandardsLoading] = useState("");
   if (!result) return null;
-  const { canonical, confidence, confidence_score, score_breakdown, review_status, explanation, evidence, alternatives, notes, audit_trail } = result;
+  const { canonical, confidence, confidence_score, score_breakdown, review_status, explanation, evidence, alternatives, notes, audit_trail, curation_metadata } = result;
   const externalEvidenceCount = evidence?.filter(e => e.retrieval_mode === "live_myvariant_api").length || 0;
+
+  async function showStandardsExport(label, path) {
+    setStandardsLoading(label);
+    try {
+      const response = await apiFetch(path, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(result),
+      });
+      if (!response.ok) throw new Error(`API error ${response.status}`);
+      setStandardsExport(await response.json());
+      setStandardsExportLabel(label);
+    } catch (error) {
+      setStandardsExport({ error:error.message });
+      setStandardsExportLabel(label);
+    } finally {
+      setStandardsLoading("");
+    }
+  }
+
   return (
     <div style={{ border:"1px solid #ddd", borderRadius:8, padding:16, background:"#fafafa", marginTop:12 }}>
       <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:10, flexWrap:"wrap" }}>
@@ -160,6 +183,54 @@ function ResultCard({ result }) {
 
       {/* Notes */}
       {notes?.length > 0 && <div style={{ color:"#9a6700", fontSize:12, marginBottom:8 }}>⚠ {notes.join(" ")}</div>}
+
+      {curation_metadata && (
+        <section style={{ borderTop:"1px solid #d0d7de", paddingTop:10, marginTop:10, marginBottom:10 }}>
+          <p style={{ fontSize:12, fontWeight:"bold", color:"#444", margin:"0 0 6px" }}>
+            Standards & Curation Alignment
+          </p>
+          <div style={{ display:"flex", gap:8, flexWrap:"wrap", fontSize:11, color:"#555", marginBottom:8 }}>
+            <span>Stage: <strong>{curation_metadata.curation_stage}</strong></span>
+            <span>Human governance: <strong>{curation_metadata.human_governance_required ? "Required" : "Not required"}</strong></span>
+            <span>Catalog promotion candidate: <strong>{curation_metadata.catalog_promotion_candidate ? "Yes" : "No"}</strong></span>
+          </div>
+          <div style={{ fontSize:11, color:"#666", marginBottom:8 }}>
+            AIWS alignment: {(curation_metadata.aiws_use_case_alignment || []).join(" · ")}
+          </div>
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+            {[
+              ["Provenance Export","/export/provenance"],
+              ["VRS-ready Stub","/export/vrs-ready"],
+              ["Cat-VRS-ready Stub","/export/cat-vrs-ready"],
+              ["VA-Spec-ready Stub","/export/va-spec-ready"],
+            ].map(([label,path])=>(
+              <button
+                key={label}
+                type="button"
+                onClick={()=>showStandardsExport(label,path)}
+                disabled={Boolean(standardsLoading)}
+                style={{ fontSize:11, padding:"4px 9px", border:"1px solid #0969da", borderRadius:4, background:"#fff", color:"#0969da", cursor:"pointer" }}
+              >
+                {standardsLoading === label ? "Loading..." : `Show ${label}`}
+              </button>
+            ))}
+          </div>
+          {standardsExport && (
+            <div style={{ marginTop:8 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:8 }}>
+                <strong style={{ fontSize:11, color:"#444" }}>{standardsExportLabel}</strong>
+                <button type="button" onClick={()=>setStandardsExport(null)}
+                  style={{ fontSize:11, border:"none", background:"none", color:"#666", cursor:"pointer" }}>
+                  Close
+                </button>
+              </div>
+              <pre style={{ margin:"5px 0 0", padding:8, background:"#f6f8fa", border:"1px solid #d0d7de", borderRadius:4, fontSize:10, overflowX:"auto", whiteSpace:"pre-wrap" }}>
+                {JSON.stringify(standardsExport,null,2)}
+              </pre>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Evidence + Audit (collapsible) */}
       <button onClick={()=>setExpanded(!expanded)} style={{ fontSize:12, background:"none", border:"1px solid #ccc", borderRadius:4, padding:"3px 10px", cursor:"pointer" }}>

@@ -477,6 +477,129 @@ def test_promote_to_catalog_is_an_explicit_disabled_stub():
     assert "do not modify" in response.json()["message"].lower()
 
 
+def test_standards_alignment_endpoint_is_explicitly_non_compliant():
+    response = client.get("/standards/alignment")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["product_positioning"] == "AI-assisted oncology curation and harmonization"
+    assert "AI-Assisted Curation" in payload["aligned_use_cases"]
+    assert "not an official GA4GH compliant implementation" in payload["disclaimer"]
+
+
+def test_provenance_export_accepts_original_case_input():
+    response = client.post(
+        "/export/provenance",
+        json={"cancer_type": "NSCLC", "gene": "HER2", "variant": "amp"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["type"] == "PROV-O-inspired"
+    assert payload["entity"]["canonical"]["gene"] == "ERBB2"
+    assert payload["activity"]["name"] == "oncology_entity_reconciliation"
+    assert payload["generated_at"]
+
+
+def test_export_endpoints_accept_an_existing_reconciliation_result():
+    reconciliation = client.post(
+        "/reconcile",
+        json={"cancer_type": "NSCLC", "gene": "HER2", "variant": "amp"},
+    ).json()
+
+    response = client.post("/export/provenance", json=reconciliation)
+
+    assert response.status_code == 200
+    assert response.json()["entity"]["canonical"]["gene"] == "ERBB2"
+
+
+def test_vrs_ready_export_is_clearly_a_stub():
+    response = client.post(
+        "/export/vrs-ready",
+        json={"cancer_type": "NSCLC", "gene": "EGFR", "variant": "Ex19del"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["type"] == "VRS-ready-stub"
+    assert payload["variant"] == "EGFR Exon 19 Deletion"
+    assert "not an official GA4GH VRS object" in payload["note"]
+
+
+def test_cat_vrs_ready_export_preserves_ntrk_ambiguity():
+    response = client.post(
+        "/export/cat-vrs-ready",
+        json={"cancer_type": "NSCLC", "gene": "TRK", "variant": "fusion"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["type"] == "Cat-VRS-ready-stub"
+    assert payload["ambiguity_preserved"] is True
+    assert set(payload["members"][:3]) == {
+        "NTRK1 Fusion",
+        "NTRK2 Fusion",
+        "NTRK3 Fusion",
+    }
+
+
+def test_va_spec_ready_export_contains_evidence_and_provenance():
+    response = client.post(
+        "/export/va-spec-ready",
+        json={"cancer_type": "NSCLC", "gene": "EGFR", "variant": "C797S"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["type"] == "VA-Spec-ready-stub"
+    assert payload["review_status"] == "REVIEW_REQUIRED"
+    assert payload["evidence"]
+    assert payload["provenance"]["type"] == "PROV-O-inspired"
+
+
+def test_reconciliation_output_includes_curation_metadata():
+    response = client.post(
+        "/reconcile",
+        json={"cancer_type": "NSCLC", "gene": "HER2", "variant": "amp"},
+    )
+
+    assert response.status_code == 200
+    metadata = response.json()["curation_metadata"]
+    assert metadata["curation_stage"] == "harmonize"
+    assert metadata["human_governance_required"] is False
+    assert metadata["catalog_promotion_candidate"] is False
+
+
+def test_review_candidate_curation_metadata_requires_governance_and_promotion_review():
+    response = client.post(
+        "/reconcile",
+        json={"cancer_type": "NSCLC", "gene": "EGFR", "variant": "C797S"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["review_status"] == "REVIEW_REQUIRED"
+    assert payload["curation_metadata"]["human_governance_required"] is True
+    assert payload["curation_metadata"]["catalog_promotion_candidate"] is True
+
+
+def test_curation_report_combines_result_provenance_and_standards_stubs():
+    response = client.post(
+        "/curation/report",
+        json={"case_id": "curation-report-1", "cancer_type": "NSCLC", "gene": "EGFR", "variant": "C797S"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["reconciliation_result"]["review_status"] == "REVIEW_REQUIRED"
+    assert payload["provenance_export"]["type"] == "PROV-O-inspired"
+    assert payload["standards_ready_exports"]["vrs_ready"]["type"] == "VRS-ready-stub"
+    assert payload["standards_ready_exports"]["cat_vrs_ready"]["type"] == "Cat-VRS-ready-stub"
+    assert payload["standards_ready_exports"]["va_spec_ready"]["type"] == "VA-Spec-ready-stub"
+    assert payload["governance_summary"]["requires_human_review"] is True
+    assert payload["governance_summary"]["candidate_for_catalog_promotion"] is True
+
+
 def test_review_queue_reopen_moves_item_back_to_pending():
     reconcile_response = client.post(
         "/reconcile",

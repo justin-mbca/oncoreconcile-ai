@@ -44,6 +44,7 @@ class ReconcileResponse(BaseModel):
     alternatives: List[Any] = Field(default_factory=list)  # other candidates considered
     notes: List[str] = Field(default_factory=list)
     audit_trail: List[str] = Field(default_factory=list)
+    curation_metadata: Optional[dict] = None
 
 
 class BatchRequest(BaseModel):
@@ -81,6 +82,7 @@ class ReviewQueueItem(BaseModel):
     alternatives: List[Any] = Field(default_factory=list)
     notes: List[str] = Field(default_factory=list)
     audit_trail: List[str] = Field(default_factory=list)
+    curation_metadata: Optional[dict] = None
     decision: Optional[str] = None        # null until reviewed
     curator_id: Optional[str] = None
     curator_notes: Optional[str] = None

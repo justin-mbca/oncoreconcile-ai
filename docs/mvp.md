@@ -6,7 +6,7 @@ OncoReconcile AI
 
 ## MVP Name
 
-Human-Governed Oncology Reconciliation Workbench
+Human-Governed AI-Assisted Curation and Harmonization Platform for Oncology
 
 ---
 
@@ -98,9 +98,12 @@ Each input record returns:
 - Canonical gene
 - Canonical variant
 - Evidence context
-- AI explanation
+- Deterministic explanation with an optional review-only AI suggestion
 - Confidence
 - Review status
+- AI-assisted curation metadata
+- Provenance-ready metadata
+- Standards-ready export availability
 
 Example:
 
@@ -137,12 +140,15 @@ Example:
 | Condition | Method | Confidence |
 |---|---|---|
 | Exact dictionary or alias match (gene, variant, cancer type) | Alias dictionary lookup | HIGH |
-| Fuzzy string match on cancer type free-text only (score ≥ 85) | RapidFuzz — cancer type only | MEDIUM |
-| Semantic similarity match via biomedical embedding model | ML/embedding (e.g. BioBERT, PubMedBERT) | MEDIUM |
-| LLM-inferred suggestion for hard/unmatched cases | LLM fallback (deferred — Hao, Jun 30+) | LOW |
+| Fuzzy string match after exact lookup fails | RapidFuzz with entity-specific safeguards | MEDIUM |
+| Candidate evidence from local or live sources | Advisory evidence lookup | MEDIUM |
+| LLM suggestion for review-required cases | Optional review-only provider hook | LOW |
 | No match from any method | — | LOW |
 
-> **Note:** Fuzzy matching is restricted to cancer type free-text only. Gene symbols (e.g. EGFR, KRAS) and variant notation (e.g. p.E746_A750del) must use exact alias dictionary lookup — fuzzy matching on these is unreliable and clinically unsafe.
+> **Safety note:** Exact alias and catalog matching run before fuzzy matching.
+> Precise protein hotspot notation such as `R132C` is not fuzzy-substituted to
+> another amino-acid change such as `R132H`; unresolved precise variants are
+> routed to candidate evidence discovery and human review.
 
 ---
 
@@ -151,7 +157,7 @@ Example:
 | Confidence | Source method | Review Status |
 |---|---|---|
 | HIGH | Exact alias dictionary match | AUTO_RECONCILE |
-| MEDIUM | Fuzzy cancer type match or ML/embedding similarity | REVIEW_REQUIRED |
+| MEDIUM | Fuzzy match, ambiguity, or candidate evidence | REVIEW_REQUIRED |
 | LOW | LLM suggestion or weak/partial evidence | REVIEW_REQUIRED |
 | LOW | No match from any method | CANNOT_RECONCILE |
 
@@ -159,22 +165,44 @@ Example:
 
 ---
 
-## Standards Alignment
+## GA4GH AI Work Stream Alignment
 
-The MVP uses a simplified Canonical Oncology Concept Object.
+OncoReconcile AI aligns most closely with the GA4GH AI Work Stream directions
+of AI-Assisted Curation and AI Governance & Trust.
 
-Future versions may align with:
+The MVP demonstrates:
 
-- HGNC
-- HGVS
-- ClinVar
-- CIViC
-- GA4GH VRS
-- CAT-VRS
-- FHIR Genomics
-- OMOP Oncology extensions
+- Variant harmonization
+- Disease, gene, and variant curation
+- Evidence aggregation
+- PROV-O-inspired provenance tracking
+- Human-governed review
+- Benchmark-driven validation
 
-CAT-VRS is important for future standards alignment, but it is not required for the first working MVP implementation.
+Implemented prototype exports include:
+
+- PROV-O-inspired provenance records
+- VRS-ready representation stubs
+- Cat-VRS-ready ambiguity stubs
+- VA-Spec-ready evidence and provenance stubs
+
+The project is standards-inspired and does not claim official GA4GH, VRS,
+Cat-VRS, VA-Spec, or PROV-O compliance.
+
+### Near-Term Standards Roadmap
+
+- Expanded provenance-chain visualization
+- Knowledge graph export prototype
+- Versioned curator-controlled catalog promotion
+
+### Future Standards Roadmap
+
+- Official GA4GH VRS object generation
+- Cat-VRS serialization
+- VA-Spec-compatible export
+- Biolink and SSSOM mappings
+- FHIR Genomics export
+- OMOP Oncology export
 
 ---
 
@@ -188,4 +216,4 @@ By the end of the MVP phase, the team should demonstrate:
 4. Show evidence and explanation.
 5. Show confidence and review status.
 6. Download or display final results.
-7. Demonstrate at least 20 NSCLC benchmark cases.
+7. Demonstrate the 161-case benchmark and external-evidence review scenarios.

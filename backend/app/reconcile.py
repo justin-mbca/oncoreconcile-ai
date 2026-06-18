@@ -1203,6 +1203,38 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
         notes.append("Variant could not be reconciled.")
         audit_trail.append("Variant unresolved")
 
+    catalog_promotion_candidate = (
+        variant_method == "external_candidate"
+        or live_external_evidence_found
+        or any(
+            item.type == "variant_external_candidate"
+            or item.retrieval_mode in {
+                "external_api_or_syntax_candidate",
+                "live_myvariant_api",
+            }
+            for item in evidence
+        )
+    )
+    curation_metadata = {
+        "curation_stage": "harmonize",
+        "curation_workflow": [
+            "raw_input",
+            "normalize",
+            "harmonize",
+            "evidence_discovery",
+            "provenance_capture",
+            "human_review",
+            "curated_output",
+        ],
+        "aiws_use_case_alignment": [
+            "AI-Assisted Curation",
+            "AI Governance & Trust",
+        ],
+        "human_governance_required": review_status == "REVIEW_REQUIRED",
+        "catalog_promotion_candidate": catalog_promotion_candidate,
+        "standards_status": "standards-inspired prototype",
+    }
+
     return ReconcileResponse(
         case_id=req.case_id,
         input=req.model_dump(),
@@ -1220,4 +1252,5 @@ def reconcile_record(req: ReconcileRequest, allow_live_lookup: bool = True) -> R
         alternatives=alternatives,
         notes=notes,
         audit_trail=audit_trail,
+        curation_metadata=curation_metadata,
     )

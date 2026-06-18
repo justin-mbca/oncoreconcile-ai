@@ -10,6 +10,13 @@ from .models import (
     ReviewDecision, ReviewQueueItem, ReviewQueueResponse,
 )
 from .reconcile import reconcile_record
+from .provenance_export import build_prov_o_inspired_record
+from .standards_alignment import get_ga4gh_aiws_alignment
+from .standards_export import (
+    build_cat_vrs_ready_stub,
+    build_va_spec_ready_stub,
+    build_vrs_ready_stub,
+)
 from . import review_store
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -37,11 +44,13 @@ app.add_middleware(
 
 @app.get("/")
 def root():
+    alignment = get_ga4gh_aiws_alignment()
     return {
         "project": "OncoReconcile AI",
         "version": "2.0.0",
         "status": "ok",
         "docs": "/docs",
+        "product_positioning": alignment["product_positioning"],
         "mvp": {
             "workflow": [
                 "normalize",
@@ -58,6 +67,24 @@ def root():
             },
         },
     }
+
+
+def resolve_reconciliation_payload(payload: dict, persist_review: bool = False) -> dict:
+    if {"input", "canonical", "review_status", "evidence"}.issubset(payload):
+        return payload
+
+    try:
+        request = ReconcileRequest.model_validate(payload)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=422,
+            detail="Provide a reconciliation result or original input with gene and variant.",
+        ) from exc
+
+    result = reconcile_record(request)
+    if persist_review:
+        queue_review_required(result)
+    return result.model_dump(mode="json")
 
 
 def queue_review_required(result) -> None:
@@ -86,6 +113,7 @@ def queue_review_required(result) -> None:
         alternatives=result.alternatives,
         notes=result.notes,
         audit_trail=result.audit_trail,
+        curation_metadata=result.curation_metadata,
     ))
 
 
@@ -214,6 +242,67 @@ def reconcile(req: ReconcileRequest):
     result = reconcile_record(req)
     queue_review_required(result)
     return result
+
+
+# ── AI-assisted curation and standards-ready exports ─────────────────────────
+
+@app.get("/standards/alignment")
+def standards_alignment():
+    return get_ga4gh_aiws_alignment()
+
+
+@app.post("/export/provenance")
+def export_provenance(payload: dict):
+    result = resolve_reconciliation_payload(payload)
+    return build_prov_o_inspired_record(result)
+
+
+@app.post("/export/vrs-ready")
+def export_vrs_ready(payload: dict):
+    result = resolve_reconciliation_payload(payload)
+    return build_vrs_ready_stub(result)
+
+
+@app.post("/export/cat-vrs-ready")
+def export_cat_vrs_ready(payload: dict):
+    result = resolve_reconciliation_payload(payload)
+    return build_cat_vrs_ready_stub(result)
+
+
+@app.post("/export/va-spec-ready")
+def export_va_spec_ready(payload: dict):
+    result = resolve_reconciliation_payload(payload)
+    return build_va_spec_ready_stub(result)
+
+
+@app.post("/curation/report")
+def curation_report(payload: dict):
+    result = resolve_reconciliation_payload(payload, persist_review=True)
+    metadata = result.get("curation_metadata") or {}
+    requires_review = result.get("review_status") == "REVIEW_REQUIRED"
+    promotion_candidate = bool(metadata.get("catalog_promotion_candidate"))
+    if requires_review and promotion_candidate:
+        reason = "Candidate evidence requires human review before catalog promotion."
+    elif requires_review:
+        reason = "The reconciliation result requires human governance."
+    else:
+        reason = "No human review is required by the current MVP status rules."
+
+    return {
+        "reconciliation_result": result,
+        "curation_metadata": metadata,
+        "provenance_export": build_prov_o_inspired_record(result),
+        "standards_ready_exports": {
+            "vrs_ready": build_vrs_ready_stub(result),
+            "cat_vrs_ready": build_cat_vrs_ready_stub(result),
+            "va_spec_ready": build_va_spec_ready_stub(result),
+        },
+        "governance_summary": {
+            "requires_human_review": requires_review,
+            "reason": reason,
+            "candidate_for_catalog_promotion": promotion_candidate,
+        },
+    }
 
 
 # ── JSON batch ────────────────────────────────────────────────────────────────
