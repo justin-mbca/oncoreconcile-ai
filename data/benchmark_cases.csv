@@ -160,3 +160,33 @@ case_158,AML,IDH1,R132C,Acute Myeloid Leukemia,IDH1,IDH1 R132C,REVIEW_REQUIRED,e
 case_159,AML,IDH2,R172K,Acute Myeloid Leukemia,IDH2,IDH2 R172K,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
 case_160,Melanoma,BRAF,K601E,Melanoma,BRAF,BRAF K601E,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
 case_161,Breast Cancer,PIK3CA,H1047L,Breast Invasive Carcinoma,PIK3CA,PIK3CA H1047L,REVIEW_REQUIRED,external_evidence,advisory_candidate,External evidence candidate; requires curator review before catalog promotion.
+case_162,NSCLC,EGFR,C797S,Lung Non-Small Cell Carcinoma,EGFR,EGFR C797S,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_163,NSCLC,EGFR,T790M,Lung Non-Small Cell Carcinoma,EGFR,EGFR T790M,AUTO_RECONCILE,external_evidence_control,local_curated_catalog,Control case showing that an existing curated catalog match does not call live evidence APIs.
+case_164,Melanoma,BRAF,K601E,Melanoma,BRAF,BRAF K601E,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_165,Breast Cancer,PIK3CA,H1047L,Breast Invasive Carcinoma,PIK3CA,PIK3CA H1047L,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_166,AML,IDH1,R132C,Acute Myeloid Leukemia,IDH1,IDH1 R132C,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_167,AML,IDH2,R172K,Acute Myeloid Leukemia,IDH2,IDH2 R172K,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_168,NSCLC,TRK,fusion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),REVIEW_REQUIRED,ambiguity,cat_vrs_inspired,TRK family ambiguity is preserved for curator selection.
+case_169,NSCLC,NTRK,fusion,Lung Non-Small Cell Carcinoma,REVIEW_REQUIRED,Categorical NTRK Fusion (NTRK1/NTRK2/NTRK3),REVIEW_REQUIRED,ambiguity,cat_vrs_inspired,NTRK family ambiguity is preserved for curator selection.
+case_170,NSCLC,EGFR,deletion,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,ambiguity_control,local_curated_catalog,Disease and gene context resolve the catalogued deletion alias.
+case_171,CRC,KRAS,mutation,Colorectal Adenocarcinoma,KRAS,KRAS Mutation,REVIEW_REQUIRED,ambiguity,local_curated_catalog,Generic KRAS mutation requires a more specific alteration.
+case_172,Melanoma,BRAF,V600,Melanoma,BRAF,BRAF V600 Mutation,REVIEW_REQUIRED,ambiguity,local_curated_catalog,V600 without a specific amino-acid substitution requires review.
+case_173,NSCLC,EGFR,Exon20ins,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 20 Insertion,REVIEW_REQUIRED,ambiguity,local_curated_catalog,Exon 20 insertion wording requires more specific review.
+case_174,Breast Cancer,HER2,mutation,Breast Invasive Carcinoma,ERBB2,ERBB2 Mutation,REVIEW_REQUIRED,ambiguity,local_curated_catalog,Generic HER2 mutation requires variant detail.
+case_175,NSCLC,KRAS,mutation,Lung Non-Small Cell Carcinoma,KRAS,KRAS Mutation,REVIEW_REQUIRED,ambiguity,local_curated_catalog,Generic KRAS mutation requires a more specific alteration.
+case_176,NSCLC,EGFRR,Ex19del,Lung Non-Small Cell Carcinoma,EGFR,EGFR Exon 19 Deletion,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Gene typo is recovered by fuzzy matching and the variant is catalogued.
+case_177,NSCLC,ERBB-2,amplificaton,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Gene punctuation and variant typo are recovered by local matching.
+case_178,LUAD,CMET,exon14 skiping,Lung Adenocarcinoma,MET,CANNOT_RECONCILE,REVIEW_REQUIRED,fuzzy_matching,local_fuzzy_match,Gene typo is recovered but disease-scoped variant confidence remains insufficient.
+case_179,Breast Cancr,PIK3CA,E545K,Breast Invasive Carcinoma,PIK3CA,PIK3CA E545K,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Disease typo is recovered and the variant is catalogued.
+case_180,Melanma,BRAF,V600E,Melanoma,BRAF,BRAF V600E,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Disease typo is recovered and the variant is catalogued.
+case_181,NSCLC,ERBB2,amplificaton,Lung Non-Small Cell Carcinoma,ERBB2,ERBB2 Amplification,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Variant typo is recovered against the scoped catalog.
+case_182,AML,FLT3,FLT3 ITD,Acute Myeloid Leukemia,FLT3,FLT3 ITD,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Spacing variation resolves to the curated FLT3 ITD concept.
+case_183,Papillary Thyroid Cancr,BRAF,V600E,Papillary Thyroid Cancer,BRAF,BRAF V600E,AUTO_RECONCILE,fuzzy_matching,local_fuzzy_match,Disease typo is recovered and the variant is catalogued.
+case_184,NSCLC,unknown_gene,X999,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,safe_failure,local_guardrail,Unknown gene and variant fail closed.
+case_185,UnknownCancer,unknown_gene,TestVariant,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,safe_failure,local_guardrail,Unknown disease gene and variant fail closed.
+case_186,NSCLC,unknown_gene,ABC123,Lung Non-Small Cell Carcinoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,safe_failure,local_guardrail,Unknown gene and synthetic variant fail closed.
+case_187,UnknownCancer,unknown_gene,unknown_variant,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,safe_failure,local_guardrail,Completely unknown record fails closed.
+case_188,Melanoma,unknown_gene,X999,Melanoma,CANNOT_RECONCILE,CANNOT_RECONCILE,CANNOT_RECONCILE,safe_failure,local_guardrail,Known disease does not override unknown gene and variant.
+case_189,AML,IDH2,R172K,Acute Myeloid Leukemia,IDH2,IDH2 R172K,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_190,NSCLC,MET,D1228N,Lung Non-Small Cell Carcinoma,MET,MET D1228N,REVIEW_REQUIRED,external_evidence,advisory_candidate,Uncatalogued hotspot notation remains advisory and requires review.
+case_191,NSCLC,ALK,fusion,Lung Non-Small Cell Carcinoma,ALK,ALK Fusion,AUTO_RECONCILE,ambiguity_control,local_curated_catalog,A specific gene and catalogued fusion term can auto-reconcile.

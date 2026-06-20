@@ -86,18 +86,31 @@ function EvidenceList({ evidence }) {
 }
 
 function EvidenceGroups({ evidence }) {
-  const liveEvidence = evidence?.filter(e => e.retrieval_mode?.startsWith("live_")) || [];
+  const errorEvidence = evidence?.filter(
+    e => e.retrieval_mode?.startsWith("live_") && e.retrieval_mode?.endsWith("_error")
+  ) || [];
+  const liveEvidence = evidence?.filter(
+    e => e.retrieval_mode?.startsWith("live_") && !e.retrieval_mode?.endsWith("_error")
+  ) || [];
   const localEvidence = evidence?.filter(e => !e.retrieval_mode?.startsWith("live_")) || [];
   return (
     <>
-      <p style={{ fontSize:12, fontWeight:"bold", margin:"6px 0 4px" }}>Local / Candidate Evidence</p>
+      <p style={{ fontSize:12, fontWeight:"bold", margin:"6px 0 4px" }}>Local Evidence</p>
       <EvidenceList evidence={localEvidence}/>
       {liveEvidence.length > 0 && (
         <>
           <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px", color:"#0969da" }}>
-            Live External API Evidence
+            Live External Evidence
           </p>
           <EvidenceList evidence={liveEvidence}/>
+        </>
+      )}
+      {errorEvidence.length > 0 && (
+        <>
+          <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px", color:"#b42318" }}>
+            External API Errors
+          </p>
+          <EvidenceList evidence={errorEvidence}/>
         </>
       )}
     </>
@@ -111,7 +124,9 @@ function ResultCard({ result }) {
   const [standardsLoading, setStandardsLoading] = useState("");
   if (!result) return null;
   const { canonical, confidence, confidence_score, score_breakdown, review_status, explanation, evidence, alternatives, notes, audit_trail, curation_metadata } = result;
-  const externalEvidenceCount = evidence?.filter(e => e.retrieval_mode === "live_myvariant_api").length || 0;
+  const externalEvidenceCount = evidence?.filter(
+    e => e.retrieval_mode?.startsWith("live_") && !e.retrieval_mode?.endsWith("_error")
+  ).length || 0;
 
   async function showStandardsExport(label, path) {
     setStandardsLoading(label);
@@ -200,6 +215,7 @@ function ResultCard({ result }) {
           <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
             {[
               ["Provenance Export","/export/provenance"],
+              ["Knowledge Graph","/export/knowledge-graph"],
               ["VRS-ready Stub","/export/vrs-ready"],
               ["Cat-VRS-ready Stub","/export/cat-vrs-ready"],
               ["VA-Spec-ready Stub","/export/va-spec-ready"],
@@ -685,6 +701,7 @@ function UploadPage() {
 function ReviewQueuePage() {
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({total:0,pending:0,reviewed:0});
+  const [agreement, setAgreement] = useState(null);
   const [filter, setFilter] = useState("pending");
   const [loading, setLoading] = useState(false);
   const [seeding, setSeeding] = useState("");
@@ -703,6 +720,8 @@ function ReviewQueuePage() {
       const data = await r.json();
       setItems(data.items);
       setSummary({ total:data.total, pending:data.pending, reviewed:data.reviewed });
+      const metricsResponse = await apiFetch("/review-queue-metrics");
+      if (metricsResponse.ok) setAgreement(await metricsResponse.json());
     } catch(e) { console.error(e); }
     finally { setLoading(false); }
   }
@@ -830,6 +849,30 @@ function ReviewQueuePage() {
     finally { setDeciding(d=>({...d,[caseId]:false})); }
   }
 
+  async function adjudicate(item) {
+    const edits = canonicalEditsByCase[item.case_id] || {};
+    setDeciding(d=>({...d,[item.case_id]:true}));
+    try {
+      await apiFetch(`/review-queue/${item.case_id}/adjudicate`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          case_id:item.case_id,
+          decision:"edit",
+          curator_id:curatorId,
+          override_canonical:{
+            cancer_type:edits.cancer_type ?? item.canonical?.cancer_type,
+            gene:edits.gene ?? item.canonical?.gene,
+            variant:edits.variant ?? item.canonical?.variant,
+          },
+          notes:reviewerNotesByCase[item.case_id] || "Final canonical result selected by adjudicator."
+        })
+      });
+      load();
+    } catch(e) { console.error(e); }
+    finally { setDeciding(d=>({...d,[item.case_id]:false})); }
+  }
+
   return (
     <div>
       <h2 style={{ color:"#028090", marginBottom:4 }}>Human Review Queue</h2>
@@ -845,6 +888,17 @@ function ReviewQueuePage() {
         ))}
       </div>
       {seedError && <p style={{ color:"#cf222e", fontSize:12, marginTop:-8 }}>{seedError}</p>}
+
+      {agreement && (
+        <div style={{ display:"flex", gap:14, flexWrap:"wrap", padding:"9px 0", marginBottom:12, borderTop:"1px solid #ddd", borderBottom:"1px solid #ddd" }}>
+          <span style={{ fontSize:12 }}>Multi-review cases: <strong>{agreement.cases_with_multiple_reviewers}</strong></span>
+          <span style={{ fontSize:12 }}>Agreement: <strong>{agreement.percent_agreement == null ? "N/A" : `${(agreement.percent_agreement*100).toFixed(1)}%`}</strong></span>
+          <span style={{ fontSize:12 }}>Cohen's kappa: <strong>{agreement.cohens_kappa == null ? "N/A" : agreement.cohens_kappa.toFixed(2)}</strong></span>
+          <span style={{ fontSize:12, color:agreement.adjudication_required ? "#cf222e" : "#555" }}>
+            Awaiting adjudication: <strong>{agreement.adjudication_required}</strong>
+          </span>
+        </div>
+      )}
 
       <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:16, flexWrap:"wrap" }}>
         <div style={{ display:"flex", gap:8 }}>
@@ -877,7 +931,9 @@ function ReviewQueuePage() {
       {items.map(item=>{
         const candidateIndex = Number(selectedCandidateByCase[item.case_id] ?? 0);
         const selectedCandidate = item.alternatives?.[candidateIndex] || item.alternatives?.[0];
-        const hasLiveEvidence = item.evidence?.some(e => e.retrieval_mode === "live_myvariant_api");
+        const hasLiveEvidence = item.evidence?.some(
+          e => e.retrieval_mode?.startsWith("live_") && !e.retrieval_mode?.endsWith("_error")
+        );
         const hasCandidateEvidence = item.evidence?.some(e =>
           ["external_candidate_evidence","local_gene_catalog_candidate"].includes(e.evidence_type)
           || ["local_civic_candidate_csv","external_api_or_syntax_candidate","local_gene_variant_catalog_candidate"].includes(e.retrieval_mode)
@@ -905,6 +961,8 @@ function ReviewQueuePage() {
                 color={item.decision==="approve" ? STATUS_COLOR.AUTO_RECONCILE : item.decision==="reject" ? STATUS_COLOR.CANNOT_RECONCILE : "#0969da"}
               />
             )}
+            {item.adjudication_status === "REQUIRED" && <Badge label="Adjudication Required" color="#cf222e"/>}
+            {item.adjudication_status === "RESOLVED" && <Badge label="Adjudicated" color="#8250df"/>}
           </div>
 
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:8, fontSize:13 }}>
@@ -1006,6 +1064,18 @@ function ReviewQueuePage() {
                   <strong>Curator notes:</strong> {item.curator_notes}
                 </p>
               )}
+              {item.review_history?.length > 0 && (
+                <>
+                  <p style={{ fontSize:12, fontWeight:"bold", margin:"10px 0 4px", color:"#444" }}>Review history</p>
+                  <ol style={{ fontSize:11, color:"#666", paddingLeft:16, margin:0 }}>
+                    {item.review_history.map((record,i)=>(
+                      <li key={i}>
+                        {record.role}: {record.curator_id || "unknown"} · {record.decision} · {record.timestamp}
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              )}
             </div>
           )}
 
@@ -1044,6 +1114,12 @@ function ReviewQueuePage() {
           {item.decision && item.curator_id && (
             <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
               <p style={{ fontSize:11, color:"#888", margin:0 }}>Reviewed by {item.curator_id}</p>
+              {item.adjudication_status === "REQUIRED" && (
+                <button onClick={()=>adjudicate(item)} disabled={deciding[item.case_id]}
+                  style={{ marginTop:0, padding:"4px 12px", background:"#8250df", color:"#fff", border:"none", borderRadius:6, cursor:"pointer", fontSize:12 }}>
+                  Adjudicate Current Canonical
+                </button>
+              )}
               <button onClick={()=>reopenItem(item.case_id)} disabled={deciding[item.case_id]}
                 style={{ marginTop:0, padding:"4px 12px", background:"#fff", color:"#555", border:"1px solid #ccc", borderRadius:6, cursor:"pointer", fontSize:12 }}>
                 Reopen

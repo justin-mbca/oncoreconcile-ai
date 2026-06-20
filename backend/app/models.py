@@ -69,6 +69,15 @@ class ReviewDecision(BaseModel):
     )
 
 
+class ReviewDecisionRecord(BaseModel):
+    decision: str
+    curator_id: Optional[str] = None
+    role: str = "reviewer"
+    canonical: Optional[CanonicalConcept] = None
+    notes: Optional[str] = None
+    timestamp: str
+
+
 class ReviewQueueItem(BaseModel):
     case_id: str
     input: dict
@@ -87,6 +96,10 @@ class ReviewQueueItem(BaseModel):
     curator_id: Optional[str] = None
     curator_notes: Optional[str] = None
     decision_timestamp: Optional[str] = None
+    review_history: List[ReviewDecisionRecord] = Field(default_factory=list)
+    adjudication_status: str = "NOT_REQUIRED"
+    adjudicated_by: Optional[str] = None
+    adjudication_timestamp: Optional[str] = None
     created_at: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )

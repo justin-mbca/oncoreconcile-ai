@@ -1,556 +1,75 @@
 # OncoReconcile AI
 
-## Human-Governed AI-Assisted Curation and Harmonization Platform for Oncology
+## Human-Governed AI Platform for Oncology Data Quality, Harmonization, and Curation
 
-OncoReconcile AI transforms heterogeneous cancer types, genes, and variants into canonical oncology candidates through AI-assisted evidence discovery, explainable reconciliation, confidence scoring, provenance tracking, standards-ready exports, and expert review workflows.
+OncoReconcile AI reconciles inconsistent cancer-type, gene, and variant terminology into explainable canonical candidates. It combines deterministic matching, advisory evidence retrieval, confidence scoring, provenance, and governed expert review.
 
-This project is being developed for the **DFWIT AI & Startup Competition 2026** by **Team Variant Vanguard**.
+Built for the **DFWIT AI & Startup Competition 2026** by **Team Variant Vanguard**.
 
----
+## Why It Matters
 
-## One-Sentence MVP
+Oncology data often represents the same concept in different ways:
 
-OncoReconcile AI transforms messy oncology entities into trusted canonical oncology concepts using deterministic reconciliation, evidence discovery, adaptive external evidence retrieval, confidence scoring, explainability, provenance tracking, and human-governed review.
-
----
-
-## Problem
-
-Real-world oncology data often uses inconsistent names for the same concept.
-
-### Examples
-
-| Messy Input | Canonical Concept |
+| Input | Canonical concept |
 |---|---|
 | NSCLC | Lung Non-Small Cell Carcinoma |
 | LUAD | Lung Adenocarcinoma |
 | HER2 / HER-2 | ERBB2 |
 | HER1 | EGFR |
 | p53 | TP53 |
-| EGFR Ex19del | EGFR Exon 19 Deletion |
-| HER2 Amplification | ERBB2 Amplification |
-
-These inconsistencies make it difficult to support:
-
-- Data harmonization
-- Cohort creation
-- Evidence aggregation
-- Multi-vendor data integration
-- Population analytics
-- Precision oncology workflows
-- AI-ready oncology datasets
-
----
-
-## Solution
-
-OncoReconcile AI provides a trusted oncology reconciliation layer that:
-
-- Normalizes disease names
-- Normalizes gene names
-- Normalizes variant names
-- Preserves ambiguity when uncertainty exists
-- Discovers supporting evidence
-- Retrieves external evidence when needed
-- Generates explainable reconciliation decisions
-- Maintains provenance and audit trails
-- Supports human review and governance
-- Enables benchmark-driven validation
-
-Rather than forcing uncertain mappings, the platform routes ambiguous cases to expert review.
-
----
-
-## MVP Scope
-
-### In Scope
-
-#### Reconciliation
-
-- Cancer type reconciliation
-- Gene reconciliation
-- Variant reconciliation
-- Exact matching
-- Alias matching
-- Fuzzy matching
-
-#### Explainability
-
-- Deterministic explanations
-- Confidence scoring
-- Confidence breakdown
-- Alternatives considered
-
-#### Evidence
-
-- Local evidence retrieval
-- Candidate evidence discovery
-- Disease-gene context validation
-- Curated variant catalog validation
-- Adaptive MyVariant.info evidence retrieval
-
-#### Governance
-
-- Persistent human review queue
-- Approve workflow
-- Reject workflow
-- Edit workflow
-- Reviewer notes
-- Reopen workflow
-- Duplicate review prevention
-
-#### Validation
-
-- Benchmark validation framework
-- Benchmark dashboard
-- CSV upload
-- Manual JSON/API input
-- CSV and JSON output
-
----
-
-### Out of Scope for MVP
-
-- PDF extraction
-- OCR
-- Therapy recommendation
-- Clinical decision support
-- Clinical interpretation
-- Drug recommendation
-- Trial matching
-- GraphRAG
-- Production-grade knowledge graph
-- Autonomous clinical decision-making
-
----
-
-## MVP Workflow
-
-```text
-Input
-↓
-Text Normalization
-↓
-Cancer Type Reconciliation
-↓
-Gene Reconciliation
-↓
-Variant Reconciliation
-↓
-Cat-VRS-Inspired Ambiguity Detection
-↓
-Local Knowledge Validation
-↓
-Candidate Evidence Discovery
-↓
-Confidence Scoring
-↓
-Adaptive External Evidence Retrieval (MyVariant)
-↓
-Evidence Aggregation
-↓
-Review Recommendation
-↓
-Human Review Queue
-↓
-Audit Trail
-↓
-Benchmark Validation
-↓
-Output
-````
-
----
-
-## Current MVP Capabilities
-
-Implemented and verified:
-
-### Reconciliation
-
-* Disease reconciliation
-* Gene reconciliation
-* Variant reconciliation
-* Exact matching
-* Alias matching
-* Fuzzy matching
-
-### Explainability
-
-* Deterministic explanations
-* Confidence scoring
-* Confidence breakdown
-* Alternatives considered
-
-### Evidence
-
-* Local evidence retrieval
-* Candidate evidence discovery
-* Disease-gene context validation
-* Curated variant catalog validation
-* Adaptive MyVariant.info evidence retrieval
-
-### Governance
-
-* Persistent human review queue
-* Approve workflow
-* Reject workflow
-* Edit workflow
-* Reviewer notes
-* Reopen workflow
-* Duplicate review prevention
-
-### Validation
-
-* Benchmark validation framework
-* Benchmark dashboard
-* CSV upload
-* Manual API input
-* CSV and JSON output
-
----
-
-## Output Status Categories
-
-Every input record ends in one of three states.
-
-| Status           | Meaning                                        |
-| ---------------- | ---------------------------------------------- |
-| AUTO_RECONCILE   | High-confidence reconciliation                 |
-| REVIEW_REQUIRED  | Ambiguous or evidence-supported reconciliation |
-| CANNOT_RECONCILE | No reliable reconciliation found               |
-
-### AUTO_RECONCILE Example
-
-```text
-NSCLC + HER2 + Amplification
-↓
-ERBB2 Amplification
-```
-
-### REVIEW_REQUIRED Examples
-
-```text
-NSCLC + TRK + fusion
-```
-
-```text
-NSCLC + EGFR + C797S
-```
-
-### CANNOT_RECONCILE Example
-
-```text
-UnknownCancer + RandomGeneXYZ + RandomVariant
-```
-
----
-
-## Evidence and Governance
-
-The MVP uses two evidence layers.
-
-### Local Evidence
-
-* Alias dictionaries
-* Disease-gene context catalog
-* Curated variant catalog
-* Local CIViC candidate rows
-* Curated external-reference mappings
-
-### External Evidence
-
-Current implementation:
-
-* Live MyVariant.info evidence lookup
-* Best-effort live CIViC variant candidate lookup
-* Live MyGene.info gene candidate lookup
-* Local CIViC candidate dataset
-* Local ClinVar, CIViC, and OncoKB reference mappings
-
-Future roadmap:
-
-* Hardened CIViC connector with stronger response validation and monitoring
-* Direct ClinVar API integration
-* ClinGen Allele Registry
-
-### Governance Rules
-
-External evidence:
-
-* Supports human review only
-* Never directly produces `AUTO_RECONCILE`
-* Includes source metadata
-* Includes retrieval mode
-* Includes timestamp
-* Includes external identifiers
-* Includes source URLs when available
-* Fails gracefully when APIs are unavailable
-
-Review-required cases are persisted in:
-
-```text
-data/review_queue.json
-```
-
-Review decisions include:
-
-* Approve
-* Reject
-* Edit
-* Reviewer notes
-* Reopen
-
-Approved reviews do not automatically modify curated catalogs.
-
-Future catalog promotion remains an explicit governance action.
-
----
-
-## Live Evidence Example
-
-```bash
-curl -X POST http://127.0.0.1:8000/reconcile \
-  -H "Content-Type: application/json" \
-  -d '{"cancer_type":"NSCLC","gene":"EGFR","variant":"C797S"}'
-```
-
-Expected status:
-
-```text
-REVIEW_REQUIRED
-```
-
-If MyVariant.info is available, the response may include:
-
-```text
-retrieval_mode: live_myvariant_api
-```
-
-If MyVariant.info is unavailable, reconciliation still succeeds and records:
-
-```text
-retrieval_mode: live_myvariant_api_error
-```
-
-The case remains routed to human review.
-
----
-
-## Explainability
-
-Each reconciliation returns:
-
-* Canonical concepts
-* Explanation
-* Confidence score
-* Confidence breakdown
-* Evidence sources
-* Alternatives considered
-* Review recommendation
-* Audit history
-
-The platform prioritizes transparency over automation.
-
----
-
-## Standards Alignment
-
-### Implemented / Inspired
-
-* HGNC-inspired gene normalization
-* HGVS-inspired variant normalization
-* ClinVar-inspired evidence references
-* ClinGen-inspired curation concepts
-* Cat-VRS-inspired ambiguity preservation
-* VA-Spec-inspired provenance model
-* Adaptive external evidence retrieval
-
-### Future Roadmap
-
-* GA4GH VRS integration
-* GA4GH Cat-VRS serialization
-* GA4GH VA-Spec-compatible export
-* HL7 FHIR Genomics interoperability
-* mCODE interoperability
-* OMOP Oncology interoperability
-* Production-grade CIViC integration
-* ClinGen Allele Registry integration
-* Direct ClinVar integration
-* Production-grade reviewer-assistance models
-
-> Important: The MVP is inspired by these standards and concepts but does not claim official compliance or certification.
-
----
-
-## GA4GH AI Work Stream Alignment
-
-OncoReconcile AI aligns most closely with the GA4GH AI Work Stream directions
-of AI-Assisted Curation and AI Governance & Trust.
-
-The MVP demonstrates:
-
-* Variant harmonization
-* Disease, gene, and variant curation
-* Candidate and live evidence aggregation
-* PROV-O-inspired provenance tracking
-* Human-governed review
-* Benchmark-driven validation
-* VRS-ready, Cat-VRS-ready, and VA-Spec-ready prototype exports
-
-The project is standards-inspired and does not claim official GA4GH, VRS,
-Cat-VRS, VA-Spec, or PROV-O compliance.
-
-### Near-Term Standards Roadmap
-
-* Expand provenance-chain visualization
-* Add a knowledge graph export prototype
-* Add versioned curator-controlled catalog promotion
-
-### Future Standards Roadmap
-
-* Official GA4GH VRS object generation
-* Cat-VRS serialization
-* VA-Spec-compatible export
-* Biolink and SSSOM mappings
-* FHIR Genomics export
-* OMOP Oncology export
-
-The current standards-ready exports are demonstration adapters, not official
-standards objects.
-
----
-
-## Verification Status
-
-Current automated verification results:
-
-```text
-35 tests passed
-161 benchmark cases
-Frontend production build successful
-Backend API verified
-Review workflow verified
-External evidence retrieval verified
-```
-
-Test coverage includes:
-
-* `AUTO_RECONCILE` guardrails
-* `REVIEW_REQUIRED` workflows
-* Candidate evidence routing
-* MyVariant success and failure handling
-* Review queue persistence
-* Duplicate prevention
-* Approve workflows
-* Edit workflows
-* Reopen workflows
-
----
-
-## What Makes OncoReconcile AI Different
-
-Most normalization systems stop after terminology mapping.
-
-OncoReconcile AI extends reconciliation with:
-
-* Human-in-the-loop governance
-* Ambiguity preservation
-* Candidate evidence discovery
-* Adaptive external evidence retrieval
-* Provenance tracking
-* Auditability
-* Catalog expansion workflows
-* Benchmark-driven validation
-* Standards-aligned architecture
-
-The platform is designed as a trusted oncology data quality foundation for future analytics, interoperability, and AI-assisted workflows.
-
----
-
-## Repository Structure
-
-```text
-oncoreconcile-ai/
-├── contracts/              # Shared API input/output contracts
-├── data/                   # Benchmark cases, aliases, review queue, evidence references
-├── backend/                # FastAPI backend
-├── frontend/               # React frontend
-├── docs/                   # MVP, architecture, weekly plan, decisions
-├── demo/                   # Demo script and future presentation assets
-└── .github/                # Issue templates, PR template, CI
-```
-
----
-
-## Quick Start: Backend
-
-Use Python 3.10, 3.11, or 3.12 for the backend.
-
-Avoid Python 3.14 with the current pinned dependencies because `pydantic-core==2.20.1` does not support it.
+| Ex19del | EGFR Exon 19 Deletion |
+
+These inconsistencies complicate cohort creation, evidence aggregation, analytics, and the preparation of trustworthy AI-ready datasets.
+
+## Current MVP
+
+- Disease, gene, and variant reconciliation
+- Exact, alias, and fuzzy matching
+- Safe ambiguity preservation
+- Three outcomes: `AUTO_RECONCILE`, `REVIEW_REQUIRED`, and `CANNOT_RECONCILE`
+- Deterministic explanations, confidence scores, alternatives, and audit trails
+- Advisory MyVariant.info, ClinVar, CIViC, and ClinGen Allele Registry retrieval
+- Persistent human review queue with stable keys and duplicate prevention
+- Review history, agreement metrics, Cohen's kappa, disagreement detection, and adjudication
+- PROV-O-inspired provenance export
+- JSON-LD knowledge graph prototype
+- VRS-ready, Cat-VRS-ready, and VA-Spec-ready export stubs
+- Curation metadata and combined curation report
+
+External evidence never creates a high-confidence automatic decision by itself. Uncertain or externally supported candidates remain subject to human review.
+
+## Validation Status
+
+| Metric | Value |
+|---|---|
+| Backend Tests | 43 passed |
+| Benchmark Cases | 191 |
+| Frontend Build | Passed |
+| MyVariant Integration | Implemented |
+| ClinVar Integration | Implemented |
+| CIViC Integration | Implemented |
+| ClinGen Allele Registry Integration | Implemented |
+| Knowledge Graph Export | Implemented prototype |
+| Reviewer Agreement Metrics | Implemented |
+| Adjudication Workflow | Implemented |
+
+Verified on June 20, 2026.
+
+## Safety and Scope
+
+OncoReconcile AI is a human-governed data harmonization prototype. It does not provide clinical interpretation, treatment recommendations, or autonomous clinical decision support. Standards-related outputs are standards-inspired prototypes or export stubs, not official GA4GH, FHIR, OMOP, or RDF compliance.
+
+## Quick Start
+
+Backend:
 
 ```bash
 cd backend
-python3.12 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-PYTHONPATH=. python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-If `python3.12` is not installed, `python3.10` or `python3.11` are also fine.
-
-Open:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Test the API:
-
-```bash
-curl -X POST http://127.0.0.1:8000/reconcile \
-  -H "Content-Type: application/json" \
-  -d '{"cancer_type":"NSCLC","gene":"HER2","variant":"Amplification"}'
-```
-
-Run backend tests without requiring internet:
-
-```bash
-cd backend
-PYTHONPATH=. python -m pytest -q
-```
-
-Expected:
-
-```text
-26 passed
-```
-
-### Backend Troubleshooting
-
-If install fails with `pydantic-core` / `PyO3` and a message like:
-
-```text
-Python interpreter version (3.14) is newer than PyO3's maximum supported version
-```
-
-delete the backend virtual environment and recreate it with Python 3.10–3.12:
-
-```bash
-cd backend
-deactivate 2>/dev/null || true
-rm -rf .venv
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-PYTHONPATH=. python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
----
-
-## Quick Start: Frontend
+Frontend:
 
 ```bash
 cd frontend
@@ -558,106 +77,27 @@ npm install
 npm run dev
 ```
 
-To build the frontend:
+Validation:
 
 ```bash
-npm run build
+python -m pytest -q
+cd frontend && npm run build
 ```
 
----
+## Project Resources
 
-## Development Workflow
-
-### Run Backend
-
-```bash
-cd backend
-source .venv/bin/activate
-PYTHONPATH=. python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-### Run Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-### Run Tests
-
-```bash
-cd backend
-PYTHONPATH=. python -m pytest -q
-```
-
-### Build Frontend
-
-```bash
-cd frontend
-npm run build
-```
-
----
-
-## Team Working Rule
-
-AI can generate code, but humans own:
-
-* API contracts
-* MVP scope
-* Integration decisions
-* Review logic
-* Governance logic
-* Benchmark quality
-* Demo quality
-
-Before coding, read:
-
-1. `docs/mvp.md`
-2. `contracts/api_contract.md`
-3. `docs/weekly_plan.md`
-4. `docs/onboarding.md`
-
----
-
-## Current Project Status
-
-The engineering MVP is implemented and verified. Remaining work is primarily
-competition presentation, visual QA, and delivery packaging.
-
----
+- Repository: [github.com/justin-mbca/oncoreconcile-ai](https://github.com/justin-mbca/oncoreconcile-ai)
+- [MVP Documentation](docs/mvp.md)
+- [Checkpoint 2 Submission](docs/checkpoint2_submission.md)
+- [Architecture](docs/architecture.md)
+- [Curation Methodology](docs/curation_methodology.md)
 
 ## Roadmap
 
-### Before Final Submission
-
-* Complete final browser-based visual QA across the main demo workflow
-* Polish and rehearse the 5–7 minute demo workflow
-* Capture final screenshots
-* Finalize presentation deck
-* Record demo video
-* Perform final documentation and submission consistency review
-
-### Future
-
-* Harden the existing best-effort CIViC live candidate lookup into a production connector
-* Add direct ClinVar API integration
-* ClinGen Allele Registry integration
-* GA4GH VRS objects
-* Cat-VRS serialization
-* VA-Spec-compatible export
-* HL7 FHIR Genomics interoperability
-* OMOP Oncology integration
-* Production-grade LLM-assisted reviewer support; the MVP currently has an optional review-only hook
-* Database-backed review storage, authentication, and role-based access
-* Explicit curator-controlled promotion from approved reviews into versioned catalogs
-
----
-
-## License
-
-Competition prototype and research project.
-
-See repository license for details.
-
-```
+- Expanded benchmark coverage and independent validation
+- Evidence quality ranking
+- Multi-source evidence agents
+- Reviewer copilot
+- FHIR Genomics interoperability
+- OMOP Oncology interoperability
+- Standards-compliant genomic representations

@@ -41,6 +41,7 @@
       "confidence": "MEDIUM",
       "confidence_score": 0.713,
       "created_at": "2026-06-17T22:59:12.633395+00:00",
+      "curation_metadata": null,
       "curator_id": null,
       "curator_notes": null,
       "decision": null,
@@ -135,6 +136,7 @@
       "confidence": "MEDIUM",
       "confidence_score": 0.537,
       "created_at": "2026-06-17T22:59:12.633519+00:00",
+      "curation_metadata": null,
       "curator_id": null,
       "curator_notes": null,
       "decision": null,
@@ -241,6 +243,25 @@
       "confidence": "MEDIUM",
       "confidence_score": 0.713,
       "created_at": "2026-06-17T22:59:12.633530+00:00",
+      "curation_metadata": {
+        "aiws_use_case_alignment": [
+          "AI-Assisted Curation",
+          "AI Governance & Trust"
+        ],
+        "catalog_promotion_candidate": true,
+        "curation_stage": "harmonize",
+        "curation_workflow": [
+          "raw_input",
+          "normalize",
+          "harmonize",
+          "evidence_discovery",
+          "provenance_capture",
+          "human_review",
+          "curated_output"
+        ],
+        "human_governance_required": true,
+        "standards_status": "standards-inspired prototype"
+      },
       "curator_id": null,
       "curator_notes": null,
       "decision": null,
@@ -254,7 +275,7 @@
           "governance_standard": "VA-Spec-inspired",
           "retrieval_mode": "local_exact_alias",
           "source": "Seed Knowledge Base",
-          "timestamp": "2026-06-17T23:03:33.222247+00:00",
+          "timestamp": "2026-06-18T18:36:35.232579+00:00",
           "type": "cancer_type_alias",
           "url": null
         },
@@ -266,7 +287,7 @@
           "governance_standard": "VA-Spec-inspired",
           "retrieval_mode": "local_exact_alias",
           "source": "Seed Knowledge Base / HGNC-inspired",
-          "timestamp": "2026-06-17T23:03:33.222260+00:00",
+          "timestamp": "2026-06-18T18:36:35.232598+00:00",
           "type": "gene_alias",
           "url": null
         },
@@ -278,7 +299,7 @@
           "governance_standard": "VA-Spec-inspired",
           "retrieval_mode": "local_disease_gene_catalog",
           "source": "Disease-Gene Catalog",
-          "timestamp": "2026-06-17T23:03:33.222265+00:00",
+          "timestamp": "2026-06-18T18:36:35.232603+00:00",
           "type": "disease_gene_context",
           "url": null
         },
@@ -290,7 +311,7 @@
           "governance_standard": "VA-Spec-inspired",
           "retrieval_mode": "external_api_or_syntax_candidate",
           "source": "Candidate Evidence Lookup",
-          "timestamp": "2026-06-17T23:03:33.222270+00:00",
+          "timestamp": "2026-06-18T18:36:35.232608+00:00",
           "type": "variant_external_candidate",
           "url": null
         },
@@ -302,7 +323,7 @@
           "governance_standard": "VA-Spec-inspired",
           "retrieval_mode": "local_civic_candidate_csv",
           "source": "CIViC",
-          "timestamp": "2026-06-17T23:03:33.222423+00:00",
+          "timestamp": "2026-06-18T18:36:35.232919+00:00",
           "type": "external_evidence_candidate",
           "url": "https://civicdb.org/variants/415"
         }
@@ -326,7 +347,7 @@
         "string_similarity": 0.85,
         "variant_catalog": 0.25
       },
-      "updated_at": "2026-06-17T23:03:33.579981+00:00"
+      "updated_at": "2026-06-18T18:36:35.550884+00:00"
     }
   ]
 }

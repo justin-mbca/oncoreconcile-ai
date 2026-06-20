@@ -102,6 +102,7 @@
   "TKR1": "ERBB2",
   "TP53": "TP53",
   "TRK": "REVIEW_REQUIRED",
+  "NTRK": "REVIEW_REQUIRED",
   "TRK1": "NTRK1",
   "TRKA": "NTRK1",
   "TRKB": "NTRK2",

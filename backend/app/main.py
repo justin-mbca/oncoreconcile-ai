@@ -11,6 +11,7 @@ from .models import (
 )
 from .reconcile import reconcile_record
 from .provenance_export import build_prov_o_inspired_record
+from .knowledge_graph_export import build_knowledge_graph
 from .standards_alignment import get_ga4gh_aiws_alignment
 from .standards_export import (
     build_cat_vrs_ready_stub,
@@ -148,9 +149,10 @@ def benchmark_metrics() -> dict:
 
         expected_gene = None if row["expected_gene"] in {"REVIEW_REQUIRED", "CANNOT_RECONCILE"} else row["expected_gene"]
         expected_variant = None if row["expected_variant"] == "CANNOT_RECONCILE" else row["expected_variant"]
+        expected_disease = None if row["expected_disease"] == "CANNOT_RECONCILE" else row["expected_disease"]
         expected_status = row["expected_status"]
 
-        disease_ok = result.canonical.cancer_type == row["expected_disease"]
+        disease_ok = result.canonical.cancer_type == expected_disease
         gene_ok = result.canonical.gene == expected_gene or row["expected_gene"] == "REVIEW_REQUIRED"
         variant_ok = result.canonical.variant == expected_variant
         status_ok = result.review_status == expected_status
@@ -175,9 +177,13 @@ def benchmark_metrics() -> dict:
             for item in result.evidence
         ):
             candidate_evidence_cases += 1
-        if any("Live MyVariant lookup started" in entry for entry in result.audit_trail):
+        if any("Live external evidence lookup started" in entry for entry in result.audit_trail):
             live_external_lookup_attempted += 1
-        if any(item.retrieval_mode == "live_myvariant_api" for item in result.evidence):
+        if any(
+            item.retrieval_mode.startswith("live_")
+            and not item.retrieval_mode.endswith("_error")
+            for item in result.evidence
+        ):
             live_external_evidence_found += 1
         if not (disease_ok and gene_ok and variant_ok and status_ok):
             failures.append({
@@ -257,6 +263,12 @@ def export_provenance(payload: dict):
     return build_prov_o_inspired_record(result)
 
 
+@app.post("/export/knowledge-graph")
+def export_knowledge_graph(payload: dict):
+    result = resolve_reconciliation_payload(payload)
+    return build_knowledge_graph(result)
+
+
 @app.post("/export/vrs-ready")
 def export_vrs_ready(payload: dict):
     result = resolve_reconciliation_payload(payload)
@@ -292,6 +304,7 @@ def curation_report(payload: dict):
         "reconciliation_result": result,
         "curation_metadata": metadata,
         "provenance_export": build_prov_o_inspired_record(result),
+        "knowledge_graph_export": build_knowledge_graph(result),
         "standards_ready_exports": {
             "vrs_ready": build_vrs_ready_stub(result),
             "cat_vrs_ready": build_cat_vrs_ready_stub(result),
@@ -399,6 +412,12 @@ def get_review_item(case_id: str):
     return item
 
 
+@app.get("/review-queue-metrics")
+def get_review_queue_metrics():
+    """Return reviewer agreement and adjudication metrics."""
+    return review_store.agreement_metrics()
+
+
 @app.post("/review-queue/{case_id}/decision")
 def submit_review_decision(case_id: str, decision: ReviewDecision):
     """Submit a curator decision (approve | reject | edit | override) for a case."""
@@ -407,6 +426,18 @@ def submit_review_decision(case_id: str, decision: ReviewDecision):
     if not updated:
         raise HTTPException(status_code=404, detail=f"Case {case_id} not found in review queue.")
     return {"status": "ok", "case_id": case_id, "decision": decision.decision, "item": updated}
+
+
+@app.post("/review-queue/{case_id}/adjudicate")
+def adjudicate_review_decision(case_id: str, decision: ReviewDecision):
+    """Resolve a disagreement between two or more curator decisions."""
+    decision.case_id = case_id
+    updated = review_store.apply_adjudication(decision)
+    if not updated:
+        raise HTTPException(status_code=404, detail=f"Case {case_id} not found in review queue.")
+    if updated.adjudication_status == "REQUIRED":
+        raise HTTPException(status_code=409, detail="Adjudication was not resolved.")
+    return {"status": "ok", "case_id": case_id, "item": updated}
 
 
 @app.delete("/review-queue")
